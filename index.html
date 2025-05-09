@@ -12,100 +12,145 @@
         <p>Please rotate your device to landscape mode for the best experience</p>
         <div class="rotate-icon">↻</div>
     </div>
-    <div class="container">
-        <div class="slot-machine">
-            <div class="slots-container">
-                <!-- Key Slot -->
-                <div class="slot" id="key-slot">
-                    <div class="slot-window">
-                    <div class="card current-card burgundy">
-                        <div class="card-content">
-                            <p class="card-value">C Major</p>
+    
+    <!-- Page 1: Slot Machine -->
+    <div id="page-slot-machine" class="page active-page">
+        <div class="container">
+            <div class="slot-machine">
+                <div class="slots-container">
+                    <!-- Key Slot -->
+                    <div class="slot" id="key-slot">
+                        <div class="slot-window">
+                        <div class="card current-card burgundy">
+                            <div class="card-content">
+                                <p class="card-value">C Major</p>
+                            </div>
                         </div>
+                        </div>
+                        <div class="slot-faceplate"></div>
+                        <div class="slot-faceplate-shine"></div>
                     </div>
+                    
+                    <!-- Progression Slot -->
+                    <div class="slot" id="prog-slot">
+                        <div class="slot-window">
+                        <div class="card current-card yellow">
+                            <div class="card-content">
+                                <p class="card-value">I-IV-V</p>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="slot-faceplate"></div>
+                        <div class="slot-faceplate-shine"></div>
                     </div>
-                    <div class="slot-faceplate"></div>
-                    <div class="slot-faceplate-shine"></div>
+                    
+                    <!-- Vibe Slot -->
+                    <div class="slot" id="vibe-slot">
+                        <div class="slot-window">
+                        <div class="card current-card green">
+                            <div class="card-content">
+                                <p class="card-value">Melancholic</p>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="slot-faceplate"></div>
+                        <div class="slot-faceplate-shine"></div>
+                    </div>
+                    
+                    <!-- Tempo Slot -->
+                    <div class="slot" id="tempo-slot">
+                        <div class="slot-window">
+                        <div class="card current-card blue">
+                            <div class="card-content">
+                                <p class="card-value">120 BPM</p>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="slot-faceplate"></div>
+                        <div class="slot-faceplate-shine"></div>
+                    </div>
                 </div>
                 
-                <!-- Progression Slot -->
-                <div class="slot" id="prog-slot">
-                    <div class="slot-window">
-                    <div class="card current-card yellow">
-                        <div class="card-content">
-                            <p class="card-value">I-IV-V</p>
-                        </div>
+                <!-- Slot Machine Lever -->
+                <div class="lever-container">
+                    <div class="lever" id="random-lever">
+                        <div class="lever_handle"></div>
+                        <div class="lever-base"></div>
                     </div>
-                    </div>
-                    <div class="slot-faceplate"></div>
-                    <div class="slot-faceplate-shine"></div>
-                </div>
-                
-                <!-- Vibe Slot -->
-                <div class="slot" id="vibe-slot">
-                    <div class="slot-window">
-                    <div class="card current-card green">
-                        <div class="card-content">
-                            <p class="card-value">Melancholic</p>
-                        </div>
-                    </div>
-                    </div>
-                    <div class="slot-faceplate"></div>
-                    <div class="slot-faceplate-shine"></div>
-                </div>
-                
-                <!-- Tempo Slot -->
-                <div class="slot" id="tempo-slot">
-                    <div class="slot-window">
-                    <div class="card current-card blue">
-                        <div class="card-content">
-                            <p class="card-value">120 BPM</p>
-                        </div>
-                    </div>
-                    </div>
-                    <div class="slot-faceplate"></div>
-                    <div class="slot-faceplate-shine"></div>
                 </div>
             </div>
             
-            <!-- Slot Machine Lever -->
-            <div class="lever-container">
-                <div class="lever" id="random-lever">
-                    <div class="lever_handle"></div>
-                    <div class="lever-base"></div>
-                </div>
+            <h1>JamDeck</h1>
+            
+            <div class="instructions">
+                <p>↑ tap: next • ↓ tap: prev • lever: random</p>
             </div>
         </div>
         
-        <h1>JamDeck</h1>
-        
-        <div class="instructions">
-            <p>↑ tap: next • ↓ tap: prev • lever: random</p>
+        <!-- Mode Toggle Button -->
+        <button id="toggle-btn-slot" class="toggle-btn bottom-right">Function Index</button>
+    </div>
+    
+    <!-- Page 2: Function Index -->
+    <div id="page-function-index" class="page">
+        <div class="function-index">
+            <h2>Function Index</h2>
+            <div class="function-list">
+                <div class="function-item">blocker_global_hide</div>
+                <div class="function-item"><span class="repeat">blocker_global_</span>show</div>
+                <div class="function-item"><span class="repeat">blocker_</span>slot_hide</div>
+                <div class="function-item"><span class="repeat">blocker_slot_</span>show</div>
+                <div class="function-item">card_display_update</div>
+                <div class="function-item">click_prevention_setup</div>
+                <div class="function-item"><span class="repeat">click_</span>zone_create</div>
+                <div class="function-item"><span class="repeat">click_zone_</span>recreate</div>
+                <div class="function-item">key_chord_get</div>
+                <div class="function-item"><span class="repeat">key_</span>hint_get</div>
+                <div class="function-item"><span class="repeat">key_</span>roman_get</div>
+                <div class="function-item">lever_pull</div>
+                <div class="function-item"><span class="repeat">lever_pull_</span>complete</div>
+                <div class="function-item"><span class="repeat">lever_</span>rotate</div>
+                <div class="function-item"><span class="repeat">lever_rotate_</span>multi</div>
+                <div class="function-item">orientation_class_apply</div>
+                <div class="function-item"><span class="repeat">orientation_</span>handle</div>
+                <div class="function-item">prog_is_minor</div>
+                <div class="function-item"><span class="repeat">prog_</span>num_val_get</div>
+                <div class="function-item"><span class="repeat">prog_</span>sort_key_get</div>
+                <div class="function-item">rhythm_viz_get</div>
+                <div class="function-item">slot_animating_is</div>
+                <div class="function-item"><span class="repeat">slot_</span>color_class_get</div>
+                <div class="function-item"><span class="repeat">slot_</span>rotate</div>
+                <div class="function-item">tempo_hint_get</div>
+            </div>
         </div>
+        
+        <!-- Mode Toggle Button -->
+        <button id="toggle-btn-index" class="toggle-btn bottom-right">Slot Machine</button>
     </div>
     
     <script src="script.js"></script>
+    <script src="toggle.js"></script>
     <script>
         // Force landscape orientation
-        function handleOrientation() {
+        function orientation_handle() {
             if (window.screen && window.screen.orientation) {
                 try {
                     // Try to lock the screen to landscape
                     window.screen.orientation.lock('landscape').catch(() => {
                         console.log('Screen orientation lock not supported or permission denied');
-                        applyOrientationClass();
+                        orientation_class_apply();
                     });
                 } catch (e) {
                     console.log('Screen orientation API not fully supported');
-                    applyOrientationClass();
+                    orientation_class_apply();
                 }
             } else {
-                applyOrientationClass();
+                orientation_class_apply();
             }
         }
         
         // Apply orientation class based on window dimensions
-        function applyOrientationClass() {
+        function orientation_class_apply() {
             // Use window dimensions to determine orientation
             if (window.innerWidth < window.innerHeight) {
                 document.body.classList.add('portrait');
@@ -129,15 +174,15 @@
         });
         
         // Set up orientation handling
-        window.addEventListener('load', handleOrientation);
-        window.addEventListener('resize', handleOrientation);
+        window.addEventListener('load', orientation_handle);
+        window.addEventListener('resize', orientation_handle);
         window.addEventListener('orientationchange', function() {
             // Small delay to allow the browser to complete the orientation change
-            setTimeout(handleOrientation, 100);
+            setTimeout(orientation_handle, 100);
         });
         
         // Initial call
-        handleOrientation();
+        orientation_handle();
     </script>
 </body>
 </html> 

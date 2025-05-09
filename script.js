@@ -290,8 +290,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Helper function to get the color class for a slot type
-    function slot_color_class_get(slotType) {
-        switch(slotType) {
+    function slot_color_class_get(slot_type) {
+        switch(slot_type) {
             case 'key':         return 'burgundy';
             case 'prog':        return 'yellow';
             case 'vibe':        return 'green';
@@ -329,24 +329,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Function to show slot overlay for a specific slot
-    function blocker_slot_show(slotType) {
-        const overlay = slots[slotType].querySelector('.slot-overlay');
+    function blocker_slot_show(slot_type) {
+        const overlay = slots[slot_type].querySelector('.slot-overlay');
         if (overlay) {
             overlay.style.display = 'block';
         }
     }
 
     // Function to hide slot overlay for a specific slot
-    function blocker_slot_hide(slotType) {
-        const overlay = slots[slotType].querySelector('.slot-overlay');
+    function blocker_slot_hide(slot_type) {
+        const overlay = slots[slot_type].querySelector('.slot-overlay');
         if (overlay) {
             overlay.style.display = 'none';
         }
     }
 
     // Initialize all slots with animating=false and add overlays
-    Object.keys(slots).forEach(slotType => {
-        slots[slotType].dataset.animating = 'false';
+    Object.keys(slots).forEach(slot_type => {
+        slots[slot_type].dataset.animating = 'false';
         
         // Add a slot-specific overlay to block clicks during animations
         const blocker_slot = document.createElement('div');
@@ -361,12 +361,12 @@ document.addEventListener('DOMContentLoaded', () => {
         blocker_slot.style.borderRadius     = '10px'; // Match slot border radius
         blocker_slot.style.display          = 'none';
         blocker_slot.style.cursor           = 'not-allowed';
-        slots[slotType].appendChild(blocker_slot);
+        slots[slot_type].appendChild(blocker_slot);
     });
 
     // Make sure all cards are visible initially
-    Object.keys(slots).forEach(slotType => {
-        const card = slots[slotType].querySelector('.current-card');
+    Object.keys(slots).forEach(slot_type => {
+        const card = slots[slot_type].querySelector('.current-card');
         if (card) {
             card.style.transform = 'translateY(0)';
             card.style.opacity = '1';
@@ -379,9 +379,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to create and add click areas
     function clickzone_create() {
-        Object.keys(slots).forEach(slotType => {
+        Object.keys(slots).forEach(slot_type => {
             // Remove any existing click areas first
-            const existing_areas = slots[slotType].querySelectorAll('.click-area');
+            const existing_areas = slots[slot_type].querySelectorAll('.click-area');
             existing_areas.forEach(area => area.remove());
             
             // Create click areas for top and bottom half
@@ -406,14 +406,14 @@ document.addEventListener('DOMContentLoaded', () => {
             clickzone_bottom.style.cursor    = 'pointer';
             
             // Add the click areas to the slot
-            slots[slotType].style.position = 'relative';
-            slots[slotType].appendChild(clickzone_top);
-            slots[slotType].appendChild(clickzone_bottom);
+            slots[slot_type].style.position = 'relative';
+            slots[slot_type].appendChild(clickzone_top);
+            slots[slot_type].appendChild(clickzone_bottom);
             
             // Find the overlay and ensure it stays on top
-            const overlay = slots[slotType].querySelector('.slot-overlay');
+            const overlay = slots[slot_type].querySelector('.slot-overlay');
             if (overlay) {
-                slots[slotType].appendChild(overlay);
+                slots[slot_type].appendChild(overlay);
             }
             
             // Add event listeners to the top click area
@@ -422,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (event.type === 'touchend') {
                         event.preventDefault();
                     }
-                    slot_rotate(slotType, 1);
+                    slot_rotate(slot_type, 1);
                 });
             });
             
@@ -432,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (event.type === 'touchend') {
                         event.preventDefault();
                     }
-                    slot_rotate(slotType, -1);
+                    slot_rotate(slot_type, -1);
                 });
             });
         });
@@ -464,7 +464,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Check if any slot is currently animating
     function slot_animating_is() {
-        return Object.values(slots).some(slot => slot.dataset.animating === 'true') || is_lever_pulling;
+        let animating = false;
+        Object.keys(slots).forEach(slot_type => {
+            if (slots[slot_type].dataset.animating === 'true') {
+                animating = true;
+            }
+        });
+        return animating;
     }
 
     // ======================================
@@ -472,17 +478,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // ======================================
 
     // Helper function to update all card values
-    function display_update() {
-        Object.keys(slots).forEach(slotType => {
-            const slot_window = slots[slotType].querySelector('.slot-window');
+    function card_display_update() {
+        Object.keys(slots).forEach(slot_type => {
+            const slot_window = slots[slot_type].querySelector('.slot-window');
             const card = slot_window.querySelector('.current-card');
             const value_element = card.querySelector('.card-value');
-            const card_value = slot_data[slotType][current_indices[slotType]];
+            const card_value = slot_data[slot_type][current_indices[slot_type]];
             
             value_element.textContent = card_value;
             
             // If this is a key card, update chord information
-            if (slotType === 'key') {
+            if (slot_type === 'key') {
                 const chord_info_element = card.querySelector('.chord-info');
                 
                 // If there's no chord info element, create one
@@ -529,7 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         chord_name.textContent = chords[index];
                     });
                 }
-            } else if (slotType === 'tempo') {
+            } else if (slot_type === 'tempo') {
                 // Update rhythm visualization if it's a tempo card
                 const visualization_element = card.querySelector('.rhythm-visualization');
                 
@@ -555,7 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ======================================
     
     // Initialize the slots with the first cards
-    display_update();
+    card_display_update();
 
     // Create initial click areas and set up click prevention
     clickzone_create();
@@ -578,50 +584,50 @@ document.addEventListener('DOMContentLoaded', () => {
     // ======================================
 
     // Function to rotate a specific slot
-    function slot_rotate(slotType, direction) {
-        // Prevent multiple clicks during animation
-        if (slots[slotType].dataset.animating === 'true' || is_lever_pulling) {
+    function slot_rotate(slot_type, direction) {
+        // Check if this slot is already animating or if lever is currently pulling
+        if (slots[slot_type].dataset.animating === 'true' || is_lever_pulling) {
             return;
         }
         
-        slots[slotType].dataset.animating = 'true';
+        slots[slot_type].dataset.animating = 'true';
         blocker_global_show(); // Show the global overlay during animation
-        blocker_slot_show(slotType); // Show the slot-specific overlay
+        blocker_slot_show(slot_type); // Show the slot-specific overlay
         
         // Get the slot window and current card
-        const slot_window = slots[slotType].querySelector('.slot-window');
+        const slot_window = slots[slot_type].querySelector('.slot-window');
         const current_card = slot_window.querySelector('.current-card');
         if (!current_card) {
-            slots[slotType].dataset.animating = 'false';
+            slots[slot_type].dataset.animating = 'false';
             blocker_global_hide();
-            blocker_slot_hide(slotType);
+            blocker_slot_hide(slot_type);
             return;
         }
         
         // Create a new card that will slide in
         const new_card = document.createElement('div');
-        new_card.className = `card ${slot_color_class_get(slotType)}`;
+        new_card.className = `card ${slot_color_class_get(slot_type)}`;
         
         // Update the index
-        current_indices[slotType] = (current_indices[slotType] + direction + slot_data[slotType].length) % slot_data[slotType].length;
+        current_indices[slot_type] = (current_indices[slot_type] + direction + slot_data[slot_type].length) % slot_data[slot_type].length;
         
         // Get the new card value
-        const card_value = slot_data[slotType][current_indices[slotType]];
+        const card_value = slot_data[slot_type][current_indices[slot_type]];
         
         // Set the content of the new card
-        if (slotType === 'key') {
+        if (slot_type === 'key') {
             // For key cards, add chord information
             new_card.innerHTML = key_hint_get(card_value);
-        } else if (slotType === 'tempo') {
+        } else if (slot_type === 'tempo') {
             // For tempo cards, add rhythm visualization
             new_card.innerHTML = tempo_hint_get(card_value);
         } else {
             // For other cards, just show the value
-        new_card.innerHTML = `
-            <div class="card-content">
+            new_card.innerHTML = `
+                <div class="card-content">
                     <p class="card-value">${card_value}</p>
-            </div>
-        `;
+                </div>
+            `;
         }
         
         // Position the new card
@@ -651,8 +657,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (current_card.parentNode) {
                 current_card.remove();
             }
-            slots[slotType].dataset.animating = 'false';
-            blocker_slot_hide(slotType); // Hide the slot-specific overlay
+            slots[slot_type].dataset.animating = 'false';
+            blocker_slot_hide(slot_type); // Hide the slot-specific overlay
             
             // Only hide global overlay if no other slots are animating
             if (!slot_animating_is()) {
@@ -689,18 +695,18 @@ document.addEventListener('DOMContentLoaded', () => {
             lever_handle.style.transform = '';
             
             // Randomize each slot with a slight delay between them
-            Object.keys(slots).forEach((slotType, index) => {
+            Object.keys(slots).forEach((slot_type, index) => {
                 setTimeout(() => {
                     // Get random index
-                    const randomIndex = Math.floor(Math.random() * slot_data[slotType].length);
-                    const direction = randomIndex > current_indices[slotType] ? 1 : -1;
+                    const randomIndex = Math.floor(Math.random() * slot_data[slot_type].length);
+                    const direction = randomIndex > current_indices[slot_type] ? 1 : -1;
                     
                     // Calculate the number of steps to take
-                    const steps = Math.abs(randomIndex - current_indices[slotType]);
+                    const steps = Math.abs(randomIndex - current_indices[slot_type]);
                     
                     // If we're already at the target index, still rotate once
                     if (steps === 0) {
-                        lever_rotate(slotType, 1, () => {
+                        lever_rotate(slot_type, 1, () => {
                             all_slots_complete++;
                             if (all_slots_complete >= total_slots) {
                                 lever_pull_finish();
@@ -708,7 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     } else {
                         // Simulate multiple rotations with a delay
-                        lever_multi_rotate(slotType, direction, Math.min(steps, 3), () => {
+                        lever_rotate_multi(slot_type, direction, Math.min(steps, 3), () => {
                             all_slots_complete++;
                             if (all_slots_complete >= total_slots) {
                                 lever_pull_finish();
@@ -716,7 +722,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     }
                     
-                    current_indices[slotType] = randomIndex;
+                    current_indices[slot_type] = randomIndex;
                 }, index * SLOT_DELAY);
             });
         }, LEVER_DELAY);
@@ -730,43 +736,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Version of rotateSlot specifically for lever pull (with callback)
-    function lever_rotate(slotType, direction, callback) {
-        slots[slotType].dataset.animating = 'true';
-        blocker_slot_show(slotType); // Show the slot-specific overlay
+    function lever_rotate(slot_type, direction, callback) {
+        slots[slot_type].dataset.animating = 'true';
+        blocker_slot_show(slot_type); // Show the slot-specific overlay
         
         // Get the slot window and current card
-        const slot_window = slots[slotType].querySelector('.slot-window');
+        const slot_window = slots[slot_type].querySelector('.slot-window');
         const current_card = slot_window.querySelector('.current-card');
         if (!current_card) {
-            slots[slotType].dataset.animating = 'false';
-            if (callback) callback();
+            slots[slot_type].dataset.animating = 'false';
             return;
         }
         
         // Create a new card that will slide in
         const new_card = document.createElement('div');
-        new_card.className = `card ${slot_color_class_get(slotType)}`;
+        new_card.className = `card ${slot_color_class_get(slot_type)}`;
         
-        // Update the index
-        current_indices[slotType] = (current_indices[slotType] + direction + slot_data[slotType].length) % slot_data[slotType].length;
+        // Update the index for this rotation
+        current_indices[slot_type] = (current_indices[slot_type] + direction + slot_data[slot_type].length) % slot_data[slot_type].length;
         
         // Get the new card value
-        const card_value = slot_data[slotType][current_indices[slotType]];
+        const card_value = slot_data[slot_type][current_indices[slot_type]];
         
         // Set the content of the new card
-        if (slotType === 'key') {
+        if (slot_type === 'key') {
             // For key cards, add chord information
             new_card.innerHTML = key_hint_get(card_value);
-        } else if (slotType === 'tempo') {
+        } else if (slot_type === 'tempo') {
             // For tempo cards, add rhythm visualization
             new_card.innerHTML = tempo_hint_get(card_value);
         } else {
             // For other cards, just show the value
-        new_card.innerHTML = `
-            <div class="card-content">
+            new_card.innerHTML = `
+                <div class="card-content">
                     <p class="card-value">${card_value}</p>
-            </div>
-        `;
+                </div>
+            `;
         }
         
         // Position the new card
@@ -796,57 +801,57 @@ document.addEventListener('DOMContentLoaded', () => {
             if (current_card.parentNode) {
                 current_card.remove();
             }
-            slots[slotType].dataset.animating = 'false';
-            blocker_slot_hide(slotType); // Hide the slot-specific overlay
+            slots[slot_type].dataset.animating = 'false';
+            blocker_slot_hide(slot_type); // Hide the slot-specific overlay
             if (callback) callback();
         }, ANIMATION_SPEED);
     }
 
     // Function to simulate multiple rotations with a delay (with callback)
-    function lever_multi_rotate(slotType, direction, steps, finalCallback) {
+    function lever_rotate_multi(slot_type, direction, steps, finalCallback) {
         if (steps <= 0) {
-            slots[slotType].dataset.animating = 'false';
-            blocker_slot_hide(slotType); // Hide the slot-specific overlay
+            slots[slot_type].dataset.animating = 'false';
+            blocker_slot_hide(slot_type); // Hide the slot-specific overlay
             if (finalCallback) finalCallback();
             return;
         }
         
-        slots[slotType].dataset.animating = 'true';
-        blocker_slot_show(slotType); // Show the slot-specific overlay
+        slots[slot_type].dataset.animating = 'true';
+        blocker_slot_show(slot_type); // Show the slot-specific overlay
         
         // Get the slot window and current card
-        const slot_window = slots[slotType].querySelector('.slot-window');
+        const slot_window = slots[slot_type].querySelector('.slot-window');
         const current_card = slot_window.querySelector('.current-card');
         if (!current_card) {
-            slots[slotType].dataset.animating = 'false';
+            slots[slot_type].dataset.animating = 'false';
             if (finalCallback) finalCallback();
             return;
         }
         
         // Create a new card that will slide in
         const new_card = document.createElement('div');
-        new_card.className = `card ${slot_color_class_get(slotType)}`;
+        new_card.className = `card ${slot_color_class_get(slot_type)}`;
         
         // Update the index for this rotation
-        current_indices[slotType] = (current_indices[slotType] + direction + slot_data[slotType].length) % slot_data[slotType].length;
+        current_indices[slot_type] = (current_indices[slot_type] + direction + slot_data[slot_type].length) % slot_data[slot_type].length;
         
         // Get the new card value
-        const card_value = slot_data[slotType][current_indices[slotType]];
+        const card_value = slot_data[slot_type][current_indices[slot_type]];
         
         // Set the content of the new card
-        if (slotType === 'key') {
+        if (slot_type === 'key') {
             // For key cards, add chord information
             new_card.innerHTML = key_hint_get(card_value);
-        } else if (slotType === 'tempo') {
+        } else if (slot_type === 'tempo') {
             // For tempo cards, add rhythm visualization
             new_card.innerHTML = tempo_hint_get(card_value);
         } else {
             // For other cards, just show the value
-        new_card.innerHTML = `
-            <div class="card-content">
+            new_card.innerHTML = `
+                <div class="card-content">
                     <p class="card-value">${card_value}</p>
-            </div>
-        `;
+                </div>
+            `;
         }
         
         // Position the new card
@@ -880,11 +885,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // If we have more steps, continue rotating
             if (steps > 1) {
                 setTimeout(() => {
-                    lever_multi_rotate(slotType, direction, steps - 1, finalCallback);
+                    lever_rotate_multi(slot_type, direction, steps - 1, finalCallback);
                 }, MULTI_ROTATION_DELAY);
             } else {
-                slots[slotType].dataset.animating = 'false';
-                blocker_slot_hide(slotType); // Hide the slot-specific overlay
+                slots[slot_type].dataset.animating = 'false';
+                blocker_slot_hide(slot_type); // Hide the slot-specific overlay
                 if (finalCallback) finalCallback();
             }
         }, ANIMATION_SPEED);
