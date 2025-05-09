@@ -45,23 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
             'Hypnotic', 'Quirky', 'Majestic', 'Brooding', 'Bittersweet'
         ],
         tempo: [
-            // Rhythmic patterns with visual representation
-            '4/4 Basic',          // Standard 4/4 time
-            '3/4 Waltz',          // Classic waltz feel
-            '6/8 Compound',       // Compound meter
-            '5/4 Odd Meter',      // Five beats per measure
-            '7/8 Asymmetric',     // Asymmetric rhythm
-            '12/8 Blues',         // Shuffle feel
-            '2/4 March',          // March feel
-            'Syncopated',         // Emphasizing off-beats
-            'Swing',              // Jazz swing feel
-            'Backbeat',           // Emphasizing beats 2 and 4
-            'Half-time',          // Half the perceived tempo
-            'Double-time',        // Double the perceived tempo
-            'Dotted',             // Dotted rhythms
-            'Triplets',           // Triplet-based feel
-            'Polyrhythm',         // Multiple rhythmic patterns
-            'Shifting Accents',   // Changing accent patterns
+            '120 BPM', // This matches the initial HTML value
+            '80 BPM', '90 BPM', '100 BPM', '110 BPM',
+            '130 BPM', '140 BPM', '150 BPM', '160 BPM', '170 BPM'
         ]
     };
 
@@ -271,10 +257,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // 7. Function to create and add click areas
     function clickzone_create() {
+        console.log("clickzone_create is being called");
+        
         Object.keys(slots).forEach(slot_type => {
             // Remove any existing click areas first
             const existing_areas = slots[slot_type].querySelectorAll('.click-area');
-            existing_areas.forEach(area => area.remove());
+            existing_areas.forEach(area => {
+                console.log(`Removing existing click area from ${slot_type}`);
+                area.remove();
+            });
             
             // Create click areas for top and bottom half
             const clickzone_top = document.createElement('div');
@@ -311,20 +302,22 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add event listeners to the top click area
             ['click', 'touchend'].forEach(eventType => {
                 clickzone_top.addEventListener(eventType, (event) => {
+                    console.log(`Dynamic clickzone_top clicked for ${slot_type}`);
                     if (event.type === 'touchend') {
                         event.preventDefault();
                     }
-                    slot_rotate(slot_type, 1);
+                    slot_rotate(slot_type, -1);
                 });
             });
             
             // Add event listeners to the bottom click area
             ['click', 'touchend'].forEach(eventType => {
                 clickzone_bottom.addEventListener(eventType, (event) => {
+                    console.log(`Dynamic clickzone_bottom clicked for ${slot_type}`);
                     if (event.type === 'touchend') {
                         event.preventDefault();
                     }
-                    slot_rotate(slot_type, -1);
+                    slot_rotate(slot_type, 1);
                 });
             });
         });
@@ -472,7 +465,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function lever_pull_finish() {
         is_lever_pulling = false;
         blocker_global_hide(); // Hide the global overlay after lever pull animation
-        clickzone_recreate();
+        
+        // Don't recreate clickzones since we're now using static HTML elements
+        // clickzone_recreate();
     }
     // 14. Version of rotateSlot specifically for lever pull (with callback)
     function lever_rotate(slot_type, direction, callback) {
@@ -677,27 +672,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return minor_is ? numeric_value + 0.5 : numeric_value;
     }
     // 21. Function to get rhythm visualization for tempo cards
-    function rhythm_viz_get(rhythm) {
-        const patterns = {
-            '4/4 Basic':        '♩ ♩ ♩ ♩',
-            '3/4 Waltz':        '♩ ♩ ♩',
-            '6/8 Compound':     '♪♪♪ ♪♪♪',
-            '5/4 Odd Meter':    '♩ ♩ ♩ ♩ ♩',
-            '7/8 Asymmetric':   '♪♪♪♪ ♪♪♪',
-            '12/8 Blues':       '♩. ♩. ♩. ♩.',
-            '2/4 March':        '♩ ♩',
-            'Syncopated':       '♪ ♩ ♪ ▯',
-            'Swing':            '♪♫ ♪♫',
-            'Backbeat':         '▯ ♩ ▯ ♩',
-            'Half-time':        '▮ ▯ ▮ ▯',
-            'Double-time':      '♪♪♪♪ ♪♪♪♪',
-            'Dotted':           '♩. ♪ ♩. ♪',
-            'Triplets':         '♪♪♪ ♪♪♪ ♪♪♪ ♪♪♪',
-            'Polyrhythm':       '♩♩♩ ♪♪♪♪',
-            'Shifting Accents': '▮♩♩ ♩▮♩',
-        };
+    function rhythm_viz_get(tempo) {
+        // Extract the BPM value
+        const bpm = parseInt(tempo);
         
-        return patterns[rhythm] || '';
+        if (isNaN(bpm)) {
+            return ''; // Return empty string if not a valid BPM
+        }
+        
+        // Create a simple visualization based on the BPM
+        if (bpm < 90) {
+            return '♩  ♩  ♩  ♩'; // Slower tempo, more space
+        } else if (bpm < 120) {
+            return '♩ ♩ ♩ ♩'; // Medium tempo
+        } else if (bpm < 150) {
+            return '♪♪ ♪♪ ♪♪ ♪♪'; // Faster tempo
+        } else {
+            return '♪♪♪♪ ♪♪♪♪'; // Very fast tempo
+        }
     }
     // 22. Check if any slot is currently animating
     function slot_animating_is() {
@@ -725,6 +717,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (slots[slot_type].dataset.animating === 'true' || is_lever_pulling) {
             return;
         }
+        
+        console.log(`Rotating ${slot_type} slot in direction ${direction}`);
         
         slots[slot_type].dataset.animating = 'true';
         blocker_global_show(); // Show the global overlay during animation
@@ -801,8 +795,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 blocker_global_hide();
             }
             
-            // Ensure click areas are on top
-            clickzone_recreate();
+            // Don't recreate click zones since we're using static HTML elements
+            // clickzone_recreate();
         }, ANIMATION_SPEED);
     }
     // 25. Set the content of the new card for a tempo (rhythm)
@@ -821,18 +815,60 @@ document.addEventListener('DOMContentLoaded', () => {
     // ======================================
     // Initialize the slots with the first cards
     card_display_update();
-    // Create initial click areas and set up click prevention
-    clickzone_create();
+    
+    // Add direct event listeners to click zones instead of using inline onclick
+    Object.keys(slots).forEach(slotType => {
+        const slot = slots[slotType];
+        const clickTop = slot.querySelector('.click-top');
+        const clickBottom = slot.querySelector('.click-bottom');
+        
+        console.log(`Setting up click handlers for ${slotType} slot`);
+        console.log(`Top element found: ${clickTop !== null}`);
+        console.log(`Bottom element found: ${clickBottom !== null}`);
+        
+        if (clickTop) {
+            clickTop.addEventListener('click', function(event) {
+                console.log(`Clicked top of ${slotType}`);
+                event.preventDefault();
+                event.stopPropagation();
+                slot_rotate(slotType, -1); // Previous
+            });
+        }
+        
+        if (clickBottom) {
+            clickBottom.addEventListener('click', function(event) {
+                console.log(`Clicked bottom of ${slotType}`);
+                event.preventDefault();
+                event.stopPropagation();
+                slot_rotate(slotType, 1); // Next
+            });
+        }
+    });
+    
+    // COMMENT OUT: Don't create dynamic click zones since we're using the static ones
+    // clickzone_create();
     click_default_prevent();
     // Add click and touch events for the lever
-    ['click', 'touchend'].forEach(eventType => {
-        lever.addEventListener(eventType, (event) => {
-            if (event.type === 'touchend') {
-                event.preventDefault();
-            }
-            if (!is_lever_pulling) {
-                lever_pull();
-            }
-        });
+    console.log("Setting up lever click handler");
+    lever.addEventListener('click', function(event) {
+        console.log("Lever clicked via JavaScript handler");
+        if (!is_lever_pulling) {
+            lever_pull();
+        }
     });
+    
+    // Define global functions for direct HTML onclick handlers
+    window.handleSlotClick = function(slotType, direction) {
+        // Convert direction string to number
+        const dir = direction === 'prev' ? -1 : 1;
+        
+        // Call the rotation function
+        slot_rotate(slotType, dir);
+    };
+    
+    window.handleLeverClick = function() {
+        if (!is_lever_pulling) {
+            lever_pull();
+        }
+    };
 }); 

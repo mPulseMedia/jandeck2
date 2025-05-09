@@ -6,6 +6,33 @@
     <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
     <title>JamDeck - Music Inspiration Slot Machine</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Add direct interaction styles for debugging */
+        .slot {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .click-top, .click-bottom {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            z-index: 100;
+            display: block;
+            cursor: pointer;
+        }
+        
+        .click-top {
+            top: 0;
+            background-color: rgba(255, 0, 0, 0.1);
+        }
+        
+        .click-bottom {
+            bottom: 0;
+            background-color: rgba(0, 0, 255, 0.1);
+        }
+    </style>
 </head>
 <body>
     <div class="orientation-message">
@@ -15,80 +42,89 @@
     
     <!-- Page 1: Slot Machine -->
     <div id="page-slot-machine" class="page active-page">
-        <div class="container">
-            <div class="slot-machine">
-                <div class="slots-container">
-                    <!-- Key Slot -->
-                    <div class="slot" id="key-slot">
-                        <div class="card-slot">
+    <div class="container">
+        <div class="slot-machine">
+            <div class="slots-container">
+                <!-- Key Slot -->
+                <div class="slot" id="key-slot">
+                    <div class="click-top" onclick="handleSlotClick('key', 'prev')"></div>
+                    <div class="click-bottom" onclick="handleSlotClick('key', 'next')"></div>
+                    <div class="card-slot">
                         <div class="card current-card burgundy">
                             <div class="card-content">
                                 <p class="card-value">C Major</p>
                             </div>
                         </div>
-                        </div>
-                        <div class="slot-faceplate"></div>
-                        <div class="slot-faceplate-shine"></div>
                     </div>
-                    
-                    <!-- Progression Slot -->
-                    <div class="slot" id="prog-slot">
-                        <div class="card-slot">
+                    <div class="slot-faceplate"></div>
+                    <div class="slot-faceplate-shine"></div>
+                </div>
+                
+                <!-- Progression Slot -->
+                <div class="slot" id="prog-slot">
+                    <div class="click-top" onclick="handleSlotClick('prog', 'prev')"></div>
+                    <div class="click-bottom" onclick="handleSlotClick('prog', 'next')"></div>
+                    <div class="card-slot">
                         <div class="card current-card yellow">
                             <div class="card-content">
                                 <p class="card-value">I-IV-V</p>
                             </div>
                         </div>
-                        </div>
-                        <div class="slot-faceplate"></div>
-                        <div class="slot-faceplate-shine"></div>
                     </div>
-                    
-                    <!-- Vibe Slot -->
-                    <div class="slot" id="vibe-slot">
-                        <div class="card-slot">
+                    <div class="slot-faceplate"></div>
+                    <div class="slot-faceplate-shine"></div>
+                </div>
+                
+                <!-- Vibe Slot -->
+                <div class="slot" id="vibe-slot">
+                    <div class="click-top" onclick="handleSlotClick('vibe', 'prev')"></div>
+                    <div class="click-bottom" onclick="handleSlotClick('vibe', 'next')"></div>
+                    <div class="card-slot">
                         <div class="card current-card green">
                             <div class="card-content">
                                 <p class="card-value">Melancholic</p>
                             </div>
                         </div>
-                        </div>
-                        <div class="slot-faceplate"></div>
-                        <div class="slot-faceplate-shine"></div>
                     </div>
-                    
-                    <!-- Tempo Slot -->
-                    <div class="slot" id="tempo-slot">
-                        <div class="card-slot">
+                    <div class="slot-faceplate"></div>
+                    <div class="slot-faceplate-shine"></div>
+                </div>
+                
+                <!-- Tempo Slot -->
+                <div class="slot" id="tempo-slot">
+                    <div class="click-top" onclick="handleSlotClick('tempo', 'prev')"></div>
+                    <div class="click-bottom" onclick="handleSlotClick('tempo', 'next')"></div>
+                    <div class="card-slot">
                         <div class="card current-card blue">
                             <div class="card-content">
                                 <p class="card-value">120 BPM</p>
+                                <div class="rhythm-visualization"></div>
                             </div>
                         </div>
-                        </div>
-                        <div class="slot-faceplate"></div>
-                        <div class="slot-faceplate-shine"></div>
                     </div>
-                </div>
-                
-                <!-- Slot Machine Lever -->
-                <div class="lever-container">
-                    <div class="lever" id="random-lever">
-                        <div class="lever_handle"></div>
-                        <div class="lever-base"></div>
-                    </div>
+                    <div class="slot-faceplate"></div>
+                    <div class="slot-faceplate-shine"></div>
                 </div>
             </div>
             
-            <h1>JamDeck</h1>
-            
-            <div class="instructions">
-                <p>↑ tap: next • ↓ tap: prev • lever: random</p>
+            <!-- Slot Machine Lever -->
+            <div class="lever-container">
+                <div class="lever" id="random-lever" onclick="handleLeverClick()">
+                    <div class="lever_handle"></div>
+                    <div class="lever-base"></div>
+                </div>
             </div>
+        </div>
+            
+        <h1>JamDeck</h1>
+        
+        <div class="instructions">
+            <p>↑ tap: next • ↓ tap: prev • lever: random</p>
         </div>
         
         <!-- Mode Toggle Button -->
         <button id="toggle-btn-slot" class="toggle-btn bottom-right">Function Index</button>
+    </div>
     </div>
     
     <!-- Page 2: Function Index -->
@@ -101,26 +137,24 @@
                 <div class="function-item"><span class="repeat">blocker_</span>slot_hide</div>
                 <div class="function-item"><span class="repeat">blocker_slot_</span>show</div>
                 <div class="function-item">card_display_update</div>
-                <div class="function-item">click_prevention_setup</div>
-                <div class="function-item"><span class="repeat">click_</span>zone_create</div>
-                <div class="function-item"><span class="repeat">click_zone_</span>recreate</div>
-                <div class="function-item">key_chord_get</div>
+                <div class="function-item">click_default_prevent</div>
+                <div class="function-item">clickzone_create</div>
+                <div class="function-item"><span class="repeat">clickzone_</span>recreate</div>
+                <div class="function-item">key_hint_chord_get</div>
                 <div class="function-item"><span class="repeat">key_</span>hint_get</div>
-                <div class="function-item"><span class="repeat">key_</span>roman_get</div>
+                <div class="function-item"><span class="repeat">key_hint_</span>roman_get</div>
                 <div class="function-item">lever_pull</div>
-                <div class="function-item"><span class="repeat">lever_pull_</span>complete</div>
+                <div class="function-item"><span class="repeat">lever_pull_</span>finish</div>
                 <div class="function-item"><span class="repeat">lever_</span>rotate</div>
                 <div class="function-item"><span class="repeat">lever_rotate_</span>multi</div>
-                <div class="function-item">orientation_class_apply</div>
-                <div class="function-item"><span class="repeat">orientation_</span>handle</div>
-                <div class="function-item">prog_is_minor</div>
+                <div class="function-item">prog_minor_is</div>
                 <div class="function-item"><span class="repeat">prog_</span>num_val_get</div>
                 <div class="function-item"><span class="repeat">prog_</span>sort_key_get</div>
-                <div class="function-item">rhythm_viz_get</div>
+                <div class="function-item">rhythm_hint_get</div>
+                <div class="function-item"><span class="repeat">rhythm_</span>viz_get</div>
                 <div class="function-item">slot_animating_is</div>
                 <div class="function-item"><span class="repeat">slot_</span>color_class_get</div>
                 <div class="function-item"><span class="repeat">slot_</span>rotate</div>
-                <div class="function-item">tempo_hint_get</div>
             </div>
         </div>
         
@@ -128,9 +162,142 @@
         <button id="toggle-btn-index" class="toggle-btn bottom-right">Slot Machine</button>
     </div>
     
-    <script src="script.js"></script>
-    <script src="toggle.js"></script>
     <script>
+        // Direct click handlers for debugging
+        function handleSlotClick(slotType, direction) {
+            console.log(`Clicked ${slotType} slot, direction: ${direction}`);
+            
+            // Find current index
+            const slots = {
+                key: ['C Major', 'G Major', 'D Major', 'A Major', 'E Major', 'B Major', 'F# Major',
+                      'C# Major', 'F Major', 'Bb Major', 'Eb Major', 'Ab Major', 'Db Major', 'Gb Major',
+                      'A Minor', 'E Minor', 'B Minor', 'F# Minor', 'C# Minor', 'G# Minor', 'D# Minor',
+                      'A# Minor', 'D Minor', 'G Minor', 'C Minor', 'F Minor', 'Bb Minor', 'Eb Minor'],
+                prog: ['I-IV-V', 'i-iv-v', 'i-iv-VII', 'I-ii-iii-IV', 'I-iii-IV-V', 'I-bIII-bVII-IV', 
+                       'i-bIII-bVII', 'I-IV-I-V', 'I-IV-vi-V', 'I-V-bVII-IV', 'I-V-vi-IV', 'i-bVI-bVII',
+                       'I-vi-ii-V', 'i-VI-III-VII', 'I-vi-IV-V', 'I-bVII-bVI-V', 'i-bVII-bVI-V', 
+                       'I-bVII-bVI-bVII', 'ii-V-I', 'vi-IV-I-V'],
+                vibe: ['Melancholic', 'Euphoric', 'Dreamy', 'Aggressive', 'Nostalgic', 'Triumphant', 
+                       'Mysterious', 'Playful', 'Ethereal', 'Haunting', 'Intense', 'Serene', 'Chaotic', 
+                       'Uplifting', 'Somber', 'Energetic', 'Reflective', 'Dramatic', 'Whimsical', 'Tense',
+                       'Hopeful', 'Gritty', 'Cosmic', 'Intimate', 'Anthemic', 'Hypnotic', 'Quirky', 
+                       'Majestic', 'Brooding', 'Bittersweet'],
+                tempo: ['80 BPM', '90 BPM', '100 BPM', '110 BPM', '120 BPM', '130 BPM', '140 BPM', 
+                        '150 BPM', '160 BPM', '170 BPM']
+            };
+            
+            // Get the current value
+            const slot = document.getElementById(`${slotType}-slot`);
+            const cardValue = slot.querySelector('.card-value');
+            const currentValue = cardValue.textContent;
+            let currentIndex = slots[slotType].indexOf(currentValue);
+            
+            if (currentIndex === -1) {
+                currentIndex = 0;
+            }
+            
+            // Calculate the new index
+            let newIndex;
+            if (direction === 'prev') {
+                newIndex = (currentIndex - 1 + slots[slotType].length) % slots[slotType].length;
+            } else {
+                newIndex = (currentIndex + 1) % slots[slotType].length;
+            }
+            
+            // Create animation effect
+            const card = slot.querySelector('.card');
+            card.style.transition = 'transform 0.2s, opacity 0.2s';
+            
+            if (direction === 'prev') {
+                card.style.transform = 'translateY(-30px)';
+            } else {
+                card.style.transform = 'translateY(30px)';
+            }
+            
+            card.style.opacity = '0.5';
+            
+            // Update the value after a brief animation
+            setTimeout(() => {
+                const newValue = slots[slotType][newIndex];
+                cardValue.textContent = newValue;
+                
+                setTimeout(() => {
+                    card.style.transform = 'translateY(0)';
+                    card.style.opacity = '1';
+                }, 10);
+            }, 150);
+        }
+        
+        function handleLeverClick() {
+            console.log("Lever clicked");
+            
+            // Animate the lever
+            const leverHandle = document.querySelector('.lever_handle');
+            leverHandle.style.transition = 'transform 0.2s';
+            leverHandle.style.transform = 'translateY(20px)';
+            
+            // Disable all click areas temporarily
+            document.querySelectorAll('.click-top, .click-bottom').forEach(elem => {
+                elem.style.pointerEvents = 'none';
+            });
+            
+            setTimeout(() => {
+                leverHandle.style.transform = '';
+                
+                // Animate slot cards in sequence
+                ['key', 'prog', 'vibe', 'tempo'].forEach((slotType, index) => {
+                    setTimeout(() => {
+                        const slot = document.getElementById(`${slotType}-slot`);
+                        const card = slot.querySelector('.card');
+                        const cardValue = slot.querySelector('.card-value');
+                        
+                        // Animation effect
+                        card.style.transition = 'transform 0.3s, opacity 0.3s';
+                        card.style.transform = 'translateY(100%)';
+                        card.style.opacity = '0';
+                        
+                        // Get random value
+                        const slots = {
+                            key: ['C Major', 'G Major', 'D Major', 'A Major', 'E Major', 'B Major', 'F# Major',
+                                 'C# Major', 'F Major', 'Bb Major', 'Eb Major', 'Ab Major', 'Db Major', 'Gb Major',
+                                 'A Minor', 'E Minor', 'B Minor', 'F# Minor', 'C# Minor', 'G# Minor', 'D# Minor',
+                                 'A# Minor', 'D Minor', 'G Minor', 'C Minor', 'F Minor', 'Bb Minor', 'Eb Minor'],
+                            prog: ['I-IV-V', 'i-iv-v', 'i-iv-VII', 'I-ii-iii-IV', 'I-iii-IV-V', 'I-bIII-bVII-IV', 
+                                  'i-bIII-bVII', 'I-IV-I-V', 'I-IV-vi-V', 'I-V-bVII-IV', 'I-V-vi-IV', 'i-bVI-bVII',
+                                  'I-vi-ii-V', 'i-VI-III-VII', 'I-vi-IV-V', 'I-bVII-bVI-V', 'i-bVII-bVI-V', 
+                                  'I-bVII-bVI-bVII', 'ii-V-I', 'vi-IV-I-V'],
+                            vibe: ['Melancholic', 'Euphoric', 'Dreamy', 'Aggressive', 'Nostalgic', 'Triumphant', 
+                                  'Mysterious', 'Playful', 'Ethereal', 'Haunting', 'Intense', 'Serene', 'Chaotic', 
+                                  'Uplifting', 'Somber', 'Energetic', 'Reflective', 'Dramatic', 'Whimsical', 'Tense',
+                                  'Hopeful', 'Gritty', 'Cosmic', 'Intimate', 'Anthemic', 'Hypnotic', 'Quirky', 
+                                  'Majestic', 'Brooding', 'Bittersweet'],
+                            tempo: ['80 BPM', '90 BPM', '100 BPM', '110 BPM', '120 BPM', '130 BPM', '140 BPM', 
+                                   '150 BPM', '160 BPM', '170 BPM']
+                        };
+                        
+                        setTimeout(() => {
+                            const randomIndex = Math.floor(Math.random() * slots[slotType].length);
+                            const newValue = slots[slotType][randomIndex];
+                            cardValue.textContent = newValue;
+                            
+                            // Animate the card back in
+                            card.style.transform = 'translateY(0)';
+                            card.style.opacity = '1';
+                            
+                            // Re-enable click areas after all animations complete
+                            if (index === 3) {
+                                setTimeout(() => {
+                                    document.querySelectorAll('.click-top, .click-bottom').forEach(elem => {
+                                        elem.style.pointerEvents = 'auto';
+                                    });
+                                }, 300);
+                            }
+                        }, 150);
+                    }, index * 150); // Stagger the animations
+                });
+            }, 200);
+        }
+        
         // Force landscape orientation
         function orientation_handle() {
             if (window.screen && window.screen.orientation) {
@@ -173,6 +340,26 @@
             this.style.display = 'none';
         });
         
+        // Add event listener for toggle buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtnSlot = document.getElementById('toggle-btn-slot');
+            const toggleBtnIndex = document.getElementById('toggle-btn-index');
+            const pageSlotMachine = document.getElementById('page-slot-machine');
+            const pageFunctionIndex = document.getElementById('page-function-index');
+            
+            if (toggleBtnSlot && toggleBtnIndex && pageSlotMachine && pageFunctionIndex) {
+                toggleBtnSlot.addEventListener('click', function() {
+                    pageSlotMachine.classList.remove('active-page');
+                    pageFunctionIndex.classList.add('active-page');
+                });
+                
+                toggleBtnIndex.addEventListener('click', function() {
+                    pageFunctionIndex.classList.remove('active-page');
+                    pageSlotMachine.classList.add('active-page');
+                });
+            }
+        });
+        
         // Set up orientation handling
         window.addEventListener('load', orientation_handle);
         window.addEventListener('resize', orientation_handle);
@@ -184,5 +371,8 @@
         // Initial call
         orientation_handle();
     </script>
+    
+    <script src="script.js"></script>
+    <script src="toggle.js"></script>
 </body>
 </html> 
