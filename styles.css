@@ -731,6 +731,8 @@ body.portrait .slot-faceplate-shine {
 .function-item {
     padding: 4px 10px;
     border-radius: 4px;
+    position: relative;
+    transition: background-color 0.2s ease;
 }
 
 .function-item:nth-child(odd) {
@@ -744,6 +746,40 @@ body.portrait .slot-faceplate-shine {
 /* Style for repeated terms */
 .repeat {
     color: #666;
+}
+
+/* Copy tooltip */
+.copy-tooltip {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4a4;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    pointer-events: none;
+    animation: fadeInOut 1s ease;
+    z-index: 10;
+}
+
+.copy-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #4a4 transparent transparent transparent;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
 }
 
 /* Toggle Buttons */
