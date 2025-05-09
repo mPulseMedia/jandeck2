@@ -125,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
         blocker_slot.style.cursor           = 'not-allowed';
         slots[slot_type].appendChild(blocker_slot);
     });
-
     // Make sure all cards are visible initially
     Object.keys(slots).forEach(slot_type => {
         const card = slots[slot_type].querySelector('.current-card');
@@ -134,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.opacity = '1';
         }
     });
-    
     // Sort the keys array alphabetically, with major keys first
     slot_data.key.sort((a, b) => {
         const a_is_major = a.includes('Major');
@@ -147,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Within each group, sort alphabetically
         return a.localeCompare(b);
     });
-
     // Sort the progression array numerically and by major/minor
     slot_data.prog.sort((a, b) => {
         const a_val = prog_sort_key_get(a);
@@ -156,21 +153,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Sort by the combined numeric value and major/minor indicator
         return a_val - b_val;
     });
-
-    // ======================================
-    // FUNCTION INDEX ORDER
-    // ======================================
-    
+    //////////////////////////////////////////////////////////////
     // 1. Function to hide the global overlay
     function blocker_global_hide() {
         blocker_global.style.display = 'none';
     }
-    
     // 2. Function to show the global overlay
     function blocker_global_show() {
         blocker_global.style.display = 'block';
     }
-    
     // 3. Function to hide slot overlay for a specific slot
     function blocker_slot_hide(slot_type) {
         const overlay = slots[slot_type].querySelector('.slot-overlay');
@@ -178,7 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
             overlay.style.display = 'none';
         }
     }
-    
     // 4. Function to show slot overlay for a specific slot
     function blocker_slot_show(slot_type) {
         const overlay = slots[slot_type].querySelector('.slot-overlay');
@@ -186,12 +176,11 @@ document.addEventListener('DOMContentLoaded', () => {
             overlay.style.display = 'block';
         }
     }
-    
     // 5. Helper function to update all card values
     function card_display_update() {
         Object.keys(slots).forEach(slot_type => {
-            const slot_window = slots[slot_type].querySelector('.slot-window');
-            const card = slot_window.querySelector('.current-card');
+            const card_slot = slots[slot_type].querySelector('.card-slot');
+            const card = card_slot.querySelector('.current-card');
             const value_element = card.querySelector('.card-value');
             const card_value = slot_data[slot_type][current_indices[slot_type]];
             
@@ -265,7 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
     // 6. Function to disable all default click behaviors
     function click_default_prevent() {
         // Prevent default clicks on the entire document during animations
@@ -281,7 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('click', handleClick, true);
         document.addEventListener('touchstart', handleClick, true);
     }
-    
     // 7. Function to create and add click areas
     function clickzone_create() {
         Object.keys(slots).forEach(slot_type => {
@@ -342,7 +329,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-    
     // 8. Function to recreate click areas (to ensure they're on top)
     function clickzone_recreate() {
         // Small delay to ensure DOM is updated
@@ -350,7 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
             clickzone_create();
         }, 10);
     }
-    
     // 9. Helper function to get chords for a key
     function key_chord_get(key) {
         // Extract note and mode
@@ -391,7 +376,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         return chords;
     }
-
     // 10. Set the content of the new card for a key
     function key_hint_get(key) {
         const chords = key_chord_get(key);
@@ -423,7 +407,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
     }
-    
     // 11. Helper function to get Roman numerals for a key
     function key_roman_get(key) {
         const major_is = key.includes('Major');
@@ -432,7 +415,6 @@ document.addEventListener('DOMContentLoaded', () => {
             ? ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°']
             : ['i', 'ii°', 'III', 'iv', 'v', 'VI', 'VII'];
     }
-    
     // 12. Function to pull the lever and randomize all slots
     function lever_pull() {
         // Prevent lever pull during animation
@@ -486,22 +468,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }, LEVER_DELAY);
     }
-    
     // 13. Function to finish lever pull and re-enable interactions
     function lever_pull_finish() {
         is_lever_pulling = false;
         blocker_global_hide(); // Hide the global overlay after lever pull animation
         clickzone_recreate();
     }
-    
     // 14. Version of rotateSlot specifically for lever pull (with callback)
     function lever_rotate(slot_type, direction, callback) {
         slots[slot_type].dataset.animating = 'true';
         blocker_slot_show(slot_type); // Show the slot-specific overlay
         
         // Get the slot window and current card
-        const slot_window = slots[slot_type].querySelector('.slot-window');
-        const current_card = slot_window.querySelector('.current-card');
+        const card_slot = slots[slot_type].querySelector('.card-slot');
+        const current_card = card_slot.querySelector('.current-card');
         if (!current_card) {
             slots[slot_type].dataset.animating = 'false';
             return;
@@ -543,7 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Add the new card to the slot window
-        slot_window.appendChild(new_card);
+        card_slot.appendChild(new_card);
         
         // Force reflow
         new_card.offsetHeight;
@@ -565,7 +545,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (callback) callback();
         }, ANIMATION_SPEED);
     }
-    
     // 15. Function to simulate multiple rotations with a delay (with callback)
     function lever_rotate_multi(slot_type, direction, steps, finalCallback) {
         if (steps <= 0) {
@@ -579,8 +558,8 @@ document.addEventListener('DOMContentLoaded', () => {
         blocker_slot_show(slot_type); // Show the slot-specific overlay
         
         // Get the slot window and current card
-        const slot_window = slots[slot_type].querySelector('.slot-window');
-        const current_card = slot_window.querySelector('.current-card');
+        const card_slot = slots[slot_type].querySelector('.card-slot');
+        const current_card = card_slot.querySelector('.current-card');
         if (!current_card) {
             slots[slot_type].dataset.animating = 'false';
             if (finalCallback) finalCallback();
@@ -623,7 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Add the new card to the slot window
-        slot_window.appendChild(new_card);
+        card_slot.appendChild(new_card);
         
         // Force reflow
         new_card.offsetHeight;
@@ -653,14 +632,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, ANIMATION_SPEED);
     }
-    
     // 16. orientation_class_apply (in index.html)
     // 17. orientation_handle (in index.html)
     // 18. Function to check if a progression is in minor key
     function prog_minor_is(prog) {
         return prog.startsWith('i-') || prog === 'i';
     }
-    
     // 19. Helper function to convert progression notation to numeric value for sorting
     function prog_num_val_get(prog) {
         // Create a map for Roman numeral conversion
@@ -691,7 +668,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // to ensure invalid progressions sort to the end
         return parseInt(numeric) || 9999;
     }
-    
     // 20. Helper function to get a unique identifier for sorting identical numeric values
     function prog_sort_key_get(prog) {
         const numeric_value = prog_num_val_get(prog);
@@ -700,7 +676,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         return minor_is ? numeric_value + 0.5 : numeric_value;
     }
-    
     // 21. Function to get rhythm visualization for tempo cards
     function rhythm_viz_get(rhythm) {
         const patterns = {
@@ -724,7 +699,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         return patterns[rhythm] || '';
     }
-    
     // 22. Check if any slot is currently animating
     function slot_animating_is() {
         let animating = false;
@@ -735,7 +709,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         return animating;
     }
-    
     // 23. Helper function to get the color class for a slot type
     function slot_color_class_get(slot_type) {
         switch(slot_type) {
@@ -746,7 +719,6 @@ document.addEventListener('DOMContentLoaded', () => {
             default:            return '';
         }
     }
-    
     // 24. Function to rotate a specific slot
     function slot_rotate(slot_type, direction) {
         // Check if this slot is already animating or if lever is currently pulling
@@ -759,8 +731,8 @@ document.addEventListener('DOMContentLoaded', () => {
         blocker_slot_show(slot_type); // Show the slot-specific overlay
         
         // Get the slot window and current card
-        const slot_window = slots[slot_type].querySelector('.slot-window');
-        const current_card = slot_window.querySelector('.current-card');
+        const card_slot = slots[slot_type].querySelector('.card-slot');
+        const current_card = card_slot.querySelector('.current-card');
         if (!current_card) {
             slots[slot_type].dataset.animating = 'false';
             blocker_global_hide();
@@ -804,7 +776,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Add the new card to the slot window
-        slot_window.appendChild(new_card);
+        card_slot.appendChild(new_card);
         
         // Force reflow
         new_card.offsetHeight;
@@ -833,7 +805,6 @@ document.addEventListener('DOMContentLoaded', () => {
             clickzone_recreate();
         }, ANIMATION_SPEED);
     }
-    
     // 25. Set the content of the new card for a tempo (rhythm)
     function tempo_hint_get(tempo) {
         const visualization = rhythm_viz_get(tempo);
@@ -845,18 +816,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
     }
-
     // ======================================
     // INITIALIZATION AND EVENT HANDLERS
     // ======================================
-    
     // Initialize the slots with the first cards
     card_display_update();
-
     // Create initial click areas and set up click prevention
     clickzone_create();
     click_default_prevent();
-
     // Add click and touch events for the lever
     ['click', 'touchend'].forEach(eventType => {
         lever.addEventListener(eventType, (event) => {
