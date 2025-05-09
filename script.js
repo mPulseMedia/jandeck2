@@ -2,32 +2,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // Define the card data for each slot
     const slotData = {
         key: [
+            // Major keys in circle of fifths order
             'C Major', 'G Major', 'D Major', 'A Major', 'E Major', 'B Major', 'F# Major',
             'C# Major', 'F Major', 'Bb Major', 'Eb Major', 'Ab Major', 'Db Major', 'Gb Major',
+            // Minor keys in circle of fifths order
             'A Minor', 'E Minor', 'B Minor', 'F# Minor', 'C# Minor', 'G# Minor', 'D# Minor',
             'A# Minor', 'D Minor', 'G Minor', 'C Minor', 'F Minor', 'Bb Minor', 'Eb Minor'
         ],
         progression: [
-            'I-IV-V',       // 145
-            'ii-V-I',       // 251
-            'I-IV-I-V',     // 1415
-            'I-V-vi-IV',    // 1564
-            'I-vi-IV-V',    // 1645
-            'I-IV-vi-V',    // 1465
-            'I-iii-IV-V',   // 1345
-            'I-ii-iii-IV',  // 1234
-            'I-vi-ii-V',    // 1625
-            'vi-IV-I-V',    // 6415
+            // Group by numeric value, with major before minor
+            'I-IV-V',       // 145 (major)
             'i-iv-v',       // 145 (minor)
             'i-iv-VII',     // 147 (minor)
-            'i-VI-III-VII', // 1637 (minor)
+            'I-ii-iii-IV',  // 1234 (major)
+            'I-iii-IV-V',   // 1345 (major)
+            'I-bIII-bVII-IV', // 1374 (major)
             'i-bIII-bVII',  // 137 (minor)
+            'I-IV-I-V',     // 1415 (major)
+            'I-IV-vi-V',    // 1465 (major)
+            'I-V-bVII-IV',  // 1574 (major)
+            'I-V-vi-IV',    // 1564 (major)
             'i-bVI-bVII',   // 167 (minor)
+            'I-vi-ii-V',    // 1625 (major)
+            'i-VI-III-VII', // 1637 (minor)
+            'I-vi-IV-V',    // 1645 (major)
+            'I-bVII-bVI-V', // 1765 (major)
             'i-bVII-bVI-V', // 1765 (minor)
-            'I-V-bVII-IV',  // 1574
-            'I-bVII-bVI-bVII', // 1767
-            'I-bVII-bVI-V', // 1765
-            'I-bIII-bVII-IV' // 1374
+            'I-bVII-bVI-bVII', // 1767 (major)
+            'ii-V-I',       // 251 (major)
+            'vi-IV-I-V',    // 6415 (major)
         ],
         vibe: [
             'Melancholic', 'Euphoric', 'Dreamy', 'Aggressive', 'Nostalgic',
@@ -38,11 +41,23 @@ document.addEventListener('DOMContentLoaded', () => {
             'Hypnotic', 'Quirky', 'Majestic', 'Brooding', 'Bittersweet'
         ],
         tempo: [
-            '60 BPM - Largo', '76 BPM - Adagio', '88 BPM - Andante', '108 BPM - Moderato',
-            '120 BPM - Allegro', '156 BPM - Vivace', '176 BPM - Presto', '200 BPM - Prestissimo',
-            '90 BPM - Hip Hop', '128 BPM - House', '140 BPM - Techno', '174 BPM - Drum & Bass',
-            'Rubato - Free Time', 'Swing - Shuffle', '3/4 Waltz', '6/8 Compound',
-            'Polyrhythmic', 'Half-time Feel', 'Double-time Feel', 'Syncopated'
+            // Rhythmic patterns with visual representation
+            '4/4 Basic',          // Standard 4/4 time
+            '3/4 Waltz',          // Classic waltz feel
+            '6/8 Compound',       // Compound meter
+            '5/4 Odd Meter',      // Five beats per measure
+            '7/8 Asymmetric',     // Asymmetric rhythm
+            '12/8 Blues',         // Shuffle feel
+            '2/4 March',          // March feel
+            'Syncopated',         // Emphasizing off-beats
+            'Swing',              // Jazz swing feel
+            'Backbeat',           // Emphasizing beats 2 and 4
+            'Half-time',          // Half the perceived tempo
+            'Double-time',        // Double the perceived tempo
+            'Dotted',             // Dotted rhythms
+            'Triplets',           // Triplet-based feel
+            'Polyrhythm',         // Multiple rhythmic patterns
+            'Shifting Accents',   // Changing accent patterns
         ]
     };
 
@@ -72,12 +87,163 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        return parseInt(numeric) || 0;
+        // Parse as integer, default to a large number if parsing fails
+        // to ensure invalid progressions sort to the end
+        return parseInt(numeric) || 9999;
     }
 
-    // Sort the progression array numerically
+    // Helper function to get a unique identifier for sorting identical numeric values
+    function getProgressionSortKey(progression) {
+        const numericValue = getProgressionNumericValue(progression);
+        // Minor progressions get a ".5" added to their value to sort after major ones
+        const isMinor = progression.startsWith('i-') || progression === 'i';
+        
+        return isMinor ? numericValue + 0.5 : numericValue;
+    }
+
+    // Function to check if a progression is in minor key
+    function isMinorProgression(progression) {
+        return progression.startsWith('i-') || progression === 'i';
+    }
+
+    // Helper function to get chords for a key
+    function getChordsForKey(keyName) {
+        // Extract note and mode
+        const parts = keyName.split(' ');
+        const rootNote = parts[0];
+        const isMajor = parts[1] === 'Major';
+        
+        // Define notes in order, handling sharps and flats
+        const allNotes = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb', 'B'];
+        
+        // Find the index of the root note
+        let rootIndex = -1;
+        for (let i = 0; i < allNotes.length; i++) {
+            const note = allNotes[i];
+            if (note === rootNote || note.includes(rootNote)) {
+                rootIndex = i;
+                break;
+            }
+        }
+        
+        // Calculate the indices for the scale notes
+        const scaleSteps = isMajor 
+            ? [0, 2, 4, 5, 7, 9, 11] // Major scale steps (whole, whole, half, whole, whole, whole, half)
+            : [0, 2, 3, 5, 7, 8, 10]; // Natural minor scale steps (whole, half, whole, whole, half, whole, whole)
+        
+        // Calculate the chord types
+        const chordTypes = isMajor 
+            ? ['maj', 'min', 'min', 'maj', 'maj', 'min', 'dim'] 
+            : ['min', 'dim', 'maj', 'min', 'min', 'maj', 'maj'];
+        
+        // Generate the chords
+        const chords = [];
+        for (let i = 0; i < 7; i++) {
+            const noteIndex = (rootIndex + scaleSteps[i]) % 12;
+            const note = allNotes[noteIndex];
+            chords.push(`${note} ${chordTypes[i]}`);
+        }
+        
+        return chords;
+    }
+
+    // Helper function to get Roman numerals for a key
+    function getRomanNumeralsForKey(keyName) {
+        const isMajor = keyName.includes('Major');
+        
+        return isMajor 
+            ? ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°']
+            : ['i', 'ii°', 'III', 'iv', 'v', 'VI', 'VII'];
+    }
+
+    // Set the content of the new card for a key
+    function getKeyCardContent(keyValue) {
+        const chords = getChordsForKey(keyValue);
+        const romanNumerals = getRomanNumeralsForKey(keyValue);
+        
+        return `
+            <div class="card-content">
+                <p class="card-value">${keyValue}</p>
+                <div class="chord-info">
+                    <div class="roman-numerals">
+                        <span class="roman-numeral">${romanNumerals[0]}</span>
+                        <span class="roman-numeral">${romanNumerals[1]}</span>
+                        <span class="roman-numeral">${romanNumerals[2]}</span>
+                        <span class="roman-numeral">${romanNumerals[3]}</span>
+                        <span class="roman-numeral">${romanNumerals[4]}</span>
+                        <span class="roman-numeral">${romanNumerals[5]}</span>
+                        <span class="roman-numeral">${romanNumerals[6]}</span>
+                    </div>
+                    <div class="chord-names">
+                        <span class="chord-name">${chords[0]}</span>
+                        <span class="chord-name">${chords[1]}</span>
+                        <span class="chord-name">${chords[2]}</span>
+                        <span class="chord-name">${chords[3]}</span>
+                        <span class="chord-name">${chords[4]}</span>
+                        <span class="chord-name">${chords[5]}</span>
+                        <span class="chord-name">${chords[6]}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Function to get rhythm visualization for tempo cards
+    function getRhythmVisualization(rhythmName) {
+        const patterns = {
+            '4/4 Basic': '♩ ♩ ♩ ♩',
+            '3/4 Waltz': '♩ ♩ ♩',
+            '6/8 Compound': '♪♪♪ ♪♪♪',
+            '5/4 Odd Meter': '♩ ♩ ♩ ♩ ♩',
+            '7/8 Asymmetric': '♪♪♪♪ ♪♪♪',
+            '12/8 Blues': '♩. ♩. ♩. ♩.',
+            '2/4 March': '♩ ♩',
+            'Syncopated': '♪ ♩ ♪ ▯',
+            'Swing': '♪♫ ♪♫',
+            'Backbeat': '▯ ♩ ▯ ♩',
+            'Half-time': '▮ ▯ ▮ ▯',
+            'Double-time': '♪♪♪♪ ♪♪♪♪',
+            'Dotted': '♩. ♪ ♩. ♪',
+            'Triplets': '♪♪♪ ♪♪♪ ♪♪♪ ♪♪♪',
+            'Polyrhythm': '♩♩♩ ♪♪♪♪',
+            'Shifting Accents': '▮♩♩ ♩▮♩',
+        };
+        
+        return patterns[rhythmName] || '';
+    }
+
+    // Set the content of the new card for a tempo (rhythm)
+    function getTempoCardContent(tempoValue) {
+        const visualization = getRhythmVisualization(tempoValue);
+        
+        return `
+            <div class="card-content">
+                <p class="card-value">${tempoValue}</p>
+                <div class="rhythm-visualization">${visualization}</div>
+            </div>
+        `;
+    }
+
+    // Sort the keys array alphabetically, with major keys first
+    slotData.key.sort((a, b) => {
+        const aIsMajor = a.includes('Major');
+        const bIsMajor = b.includes('Major');
+        
+        // Group by major/minor (all majors, then all minors)
+        if (aIsMajor && !bIsMajor) return -1;
+        if (!aIsMajor && bIsMajor) return 1;
+        
+        // Within each group, sort alphabetically
+        return a.localeCompare(b);
+    });
+
+    // Sort the progression array numerically and by major/minor
     slotData.progression.sort((a, b) => {
-        return getProgressionNumericValue(a) - getProgressionNumericValue(b);
+        const aVal = getProgressionSortKey(a);
+        const bVal = getProgressionSortKey(b);
+        
+        // Sort by the combined numeric value and major/minor indicator
+        return aVal - bVal;
     });
 
     // Animation speed in milliseconds (lower = faster)
@@ -305,12 +471,24 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update the index
         currentIndices[slotType] = (currentIndices[slotType] + direction + slotData[slotType].length) % slotData[slotType].length;
         
+        // Get the new card value
+        const cardValue = slotData[slotType][currentIndices[slotType]];
+        
         // Set the content of the new card
-        newCard.innerHTML = `
-            <div class="card-content">
-                <p class="card-value">${slotData[slotType][currentIndices[slotType]]}</p>
-            </div>
-        `;
+        if (slotType === 'key') {
+            // For key cards, add chord information
+            newCard.innerHTML = getKeyCardContent(cardValue);
+        } else if (slotType === 'tempo') {
+            // For tempo cards, add rhythm visualization
+            newCard.innerHTML = getTempoCardContent(cardValue);
+        } else {
+            // For other cards, just show the value
+            newCard.innerHTML = `
+                <div class="card-content">
+                    <p class="card-value">${cardValue}</p>
+                </div>
+            `;
+        }
         
         // Position the new card
         if (direction > 0) {
@@ -442,12 +620,24 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update the index
         currentIndices[slotType] = (currentIndices[slotType] + direction + slotData[slotType].length) % slotData[slotType].length;
         
+        // Get the new card value
+        const cardValue = slotData[slotType][currentIndices[slotType]];
+        
         // Set the content of the new card
-        newCard.innerHTML = `
-            <div class="card-content">
-                <p class="card-value">${slotData[slotType][currentIndices[slotType]]}</p>
-            </div>
-        `;
+        if (slotType === 'key') {
+            // For key cards, add chord information
+            newCard.innerHTML = getKeyCardContent(cardValue);
+        } else if (slotType === 'tempo') {
+            // For tempo cards, add rhythm visualization
+            newCard.innerHTML = getTempoCardContent(cardValue);
+        } else {
+            // For other cards, just show the value
+            newCard.innerHTML = `
+                <div class="card-content">
+                    <p class="card-value">${cardValue}</p>
+                </div>
+            `;
+        }
         
         // Position the new card
         if (direction > 0) {
@@ -510,12 +700,24 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update the index for this rotation
         currentIndices[slotType] = (currentIndices[slotType] + direction + slotData[slotType].length) % slotData[slotType].length;
         
+        // Get the new card value
+        const cardValue = slotData[slotType][currentIndices[slotType]];
+        
         // Set the content of the new card
-        newCard.innerHTML = `
-            <div class="card-content">
-                <p class="card-value">${slotData[slotType][currentIndices[slotType]]}</p>
-            </div>
-        `;
+        if (slotType === 'key') {
+            // For key cards, add chord information
+            newCard.innerHTML = getKeyCardContent(cardValue);
+        } else if (slotType === 'tempo') {
+            // For tempo cards, add rhythm visualization
+            newCard.innerHTML = getTempoCardContent(cardValue);
+        } else {
+            // For other cards, just show the value
+            newCard.innerHTML = `
+                <div class="card-content">
+                    <p class="card-value">${cardValue}</p>
+                </div>
+            `;
+        }
         
         // Position the new card
         if (direction > 0) {
@@ -564,7 +766,76 @@ document.addEventListener('DOMContentLoaded', () => {
             const slotWindow = slots[slotType].querySelector('.slot-window');
             const card = slotWindow.querySelector('.current-card');
             const valueElement = card.querySelector('.card-value');
-            valueElement.textContent = slotData[slotType][currentIndices[slotType]];
+            const cardValue = slotData[slotType][currentIndices[slotType]];
+            
+            valueElement.textContent = cardValue;
+            
+            // If this is a key card, update chord information
+            if (slotType === 'key') {
+                const chordInfoElement = card.querySelector('.chord-info');
+                
+                // If there's no chord info element, create one
+                if (!chordInfoElement) {
+                    const chords = getChordsForKey(cardValue);
+                    const romanNumerals = getRomanNumeralsForKey(cardValue);
+                    
+                    const chordInfo = document.createElement('div');
+                    chordInfo.className = 'chord-info';
+                    chordInfo.innerHTML = `
+                        <div class="roman-numerals">
+                            <span class="roman-numeral">${romanNumerals[0]}</span>
+                            <span class="roman-numeral">${romanNumerals[1]}</span>
+                            <span class="roman-numeral">${romanNumerals[2]}</span>
+                            <span class="roman-numeral">${romanNumerals[3]}</span>
+                            <span class="roman-numeral">${romanNumerals[4]}</span>
+                            <span class="roman-numeral">${romanNumerals[5]}</span>
+                            <span class="roman-numeral">${romanNumerals[6]}</span>
+                        </div>
+                        <div class="chord-names">
+                            <span class="chord-name">${chords[0]}</span>
+                            <span class="chord-name">${chords[1]}</span>
+                            <span class="chord-name">${chords[2]}</span>
+                            <span class="chord-name">${chords[3]}</span>
+                            <span class="chord-name">${chords[4]}</span>
+                            <span class="chord-name">${chords[5]}</span>
+                            <span class="chord-name">${chords[6]}</span>
+                        </div>
+                    `;
+                    
+                    card.querySelector('.card-content').appendChild(chordInfo);
+                } else {
+                    // Update existing chord info
+                    const chords = getChordsForKey(cardValue);
+                    const romanNumerals = getRomanNumeralsForKey(cardValue);
+                    
+                    const romanNumeralElements = chordInfoElement.querySelectorAll('.roman-numeral');
+                    romanNumeralElements.forEach((element, index) => {
+                        element.textContent = romanNumerals[index];
+                    });
+                    
+                    const chordNames = chordInfoElement.querySelectorAll('.chord-name');
+                    chordNames.forEach((chordName, index) => {
+                        chordName.textContent = chords[index];
+                    });
+                }
+            } else if (slotType === 'tempo') {
+                // Update rhythm visualization if it's a tempo card
+                const visualizationElement = card.querySelector('.rhythm-visualization');
+                
+                // If there's no visualization element, create one
+                if (!visualizationElement) {
+                    const visualization = getRhythmVisualization(cardValue);
+                    
+                    const rhythmVisualization = document.createElement('div');
+                    rhythmVisualization.className = 'rhythm-visualization';
+                    rhythmVisualization.textContent = visualization;
+                    
+                    card.querySelector('.card-content').appendChild(rhythmVisualization);
+                } else {
+                    // Update existing visualization
+                    visualizationElement.textContent = getRhythmVisualization(cardValue);
+                }
+            }
         });
     }
 

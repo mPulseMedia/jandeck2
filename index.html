@@ -2,11 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
     <title>JamDeck - Music Inspiration Slot Machine</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="orientation-message">
+        <p>Please rotate your device to landscape mode for the best experience</p>
+        <div class="rotate-icon">↻</div>
+    </div>
     <div class="container">
         <div class="slot-machine">
             <div class="slots-container">
@@ -80,5 +85,59 @@
     </div>
     
     <script src="script.js"></script>
+    <script>
+        // Force landscape orientation
+        function handleOrientation() {
+            if (window.screen && window.screen.orientation) {
+                try {
+                    // Try to lock the screen to landscape
+                    window.screen.orientation.lock('landscape').catch(() => {
+                        console.log('Screen orientation lock not supported or permission denied');
+                        applyOrientationClass();
+                    });
+                } catch (e) {
+                    console.log('Screen orientation API not fully supported');
+                    applyOrientationClass();
+                }
+            } else {
+                applyOrientationClass();
+            }
+        }
+        
+        // Apply orientation class based on window dimensions
+        function applyOrientationClass() {
+            // Use window dimensions to determine orientation
+            if (window.innerWidth < window.innerHeight) {
+                document.body.classList.add('portrait');
+                
+                // Check if device is mobile and show orientation message if needed
+                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                    document.querySelector('.orientation-message').style.display = 'flex';
+                } else {
+                    // On desktop, just force the landscape layout without showing the message
+                    document.querySelector('.orientation-message').style.display = 'none';
+                }
+            } else {
+                document.body.classList.remove('portrait');
+                document.querySelector('.orientation-message').style.display = 'none';
+            }
+        }
+        
+        // Add a touch event to the orientation message to dismiss it
+        document.querySelector('.orientation-message').addEventListener('click', function() {
+            this.style.display = 'none';
+        });
+        
+        // Set up orientation handling
+        window.addEventListener('load', handleOrientation);
+        window.addEventListener('resize', handleOrientation);
+        window.addEventListener('orientationchange', function() {
+            // Small delay to allow the browser to complete the orientation change
+            setTimeout(handleOrientation, 100);
+        });
+        
+        // Initial call
+        handleOrientation();
+    </script>
 </body>
 </html> 

@@ -5,6 +5,11 @@
     font-family: 'Arial', sans-serif;
 }
 
+html {
+    height: 100%;
+    overflow: hidden;
+}
+
 body {
     background-color: #121212;
     color: #ffffff;
@@ -13,6 +18,100 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+
+/* Orientation message */
+.orientation-message {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #121212;
+    color: white;
+    z-index: 9999;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.rotate-icon {
+    font-size: 4rem;
+    margin: 20px;
+    animation: rotate 2s infinite ease-in-out;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(90deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* Show orientation message in portrait mode on mobile */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+    .orientation-message {
+        display: flex;
+    }
+}
+
+/* Force landscape layout in portrait mode */
+body.portrait .container {
+    transform: rotate(90deg);
+    transform-origin: center center;
+    width: 100vh;
+    height: 100vw;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+/* Adjust sizing for portrait devices forced to landscape */
+@media screen and (max-height: 500px) {
+    body.portrait .container {
+        max-width: 95vh;
+        padding: 10px;
+    }
+    
+    body.portrait .slot {
+        height: 140px;
+        max-width: 120px;
+    }
+    
+    body.portrait h1 {
+        font-size: 1rem;
+        margin: 2px 0 2px;
+    }
+    
+    body.portrait .instructions {
+        margin-top: 2px;
+        font-size: 0.7rem;
+    }
+    
+    body.portrait .lever-container {
+        height: 140px;
+        width: 40px;
+    }
+    
+    body.portrait .lever {
+        height: 120px;
+        width: 30px;
+    }
+    
+    body.portrait .lever-base {
+        height: 95px;
+        width: 10px;
+        left: 10px;
+    }
 }
 
 .container {
@@ -161,7 +260,7 @@ h1 {
     justify-content: center;
     align-items: center;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    transition: transform 0.15s ease-out;
+    transition: transform 0.15s cubic-bezier(0.3, 0.1, 0.3, 1.0);
     backface-visibility: hidden;
     overflow: hidden;
     z-index: 2;
@@ -174,9 +273,9 @@ h1 {
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     height: 100%;
+    position: relative;
 }
 
 .card-value {
@@ -185,6 +284,64 @@ h1 {
     padding: 5px 2px;
     word-break: break-word;
     hyphens: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    margin: 0;
+    z-index: 2;
+}
+
+.chord-info {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    font-size: 0.55rem;
+    width: 100%;
+    padding: 3px;
+    color: #600000;
+    border-top: none;
+    z-index: 1;
+}
+
+.roman-numerals {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 2px;
+}
+
+.roman-numeral {
+    font-weight: bold;
+    font-size: 0.55rem;
+}
+
+.chord-names {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 2px;
+    margin-top: 2px;
+}
+
+.chord-name {
+    font-size: 0.5rem;
+}
+
+/* Rhythm visualization */
+.rhythm-visualization {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    font-size: 1rem;
+    line-height: 1.2;
+    width: 100%;
+    padding: 5px 2px;
+    color: #142044;
+    text-align: center;
+    letter-spacing: 2px;
+    z-index: 1;
 }
 
 /* Card Colors */
@@ -207,9 +364,14 @@ h1 {
 }
 
 .blue {
-    background: linear-gradient(to bottom, #4169e1, #1e90ff);
+    background: linear-gradient(to bottom, #234789, #1b3568);
     color: #fff;
-    border: 2px solid #5a8eff;
+    border: none;
+}
+
+.blue .card-value {
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Lever Styling */
@@ -221,31 +383,60 @@ h1 {
     align-items: center;
     justify-content: center;
     margin-left: 10px;
+    position: relative;
 }
 
 .lever {
     cursor: pointer;
     position: relative;
-    height: 180px;
+    height: 170px;
     width: 35px;
     transform: rotate(-5deg);
+    margin: 5px 0;
 }
 
 .lever-handle {
     width: 35px;
     height: 35px;
-    background-color: #ff3333;
+    background: radial-gradient(circle at 33% 33%, 
+                                 #ff5555 0%, 
+                                 #ff0000 40%, 
+                                 #cc0000 80%, 
+                                 #990000 100%);
     border-radius: 50%;
     position: absolute;
     top: 0;
     left: 0;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5),
+                inset 0 2px 3px rgba(255, 255, 255, 0.6),
+                inset 0 -2px 3px rgba(0, 0, 0, 0.4);
     transition: transform 0.075s;
+    overflow: hidden;
+}
+
+/* Add reflection to the lever handle */
+.lever-handle::after {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: 15%;
+    width: 40%;
+    height: 40%;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    filter: blur(1px);
+}
+
+.lever:active .lever-handle {
+    transform: translateY(5px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7),
+                inset 0 1px 2px rgba(255, 255, 255, 0.5),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .lever-base {
     width: 12px;
-    height: 145px;
+    height: 135px;
     background: linear-gradient(90deg, #777, #999, #777);
     position: absolute;
     top: 35px;
@@ -255,17 +446,42 @@ h1 {
 
 .lever:hover .lever-handle {
     transform: scale(1.1);
-    box-shadow: 0 5px 15px rgba(255, 51, 51, 0.7);
+    box-shadow: 0 7px 15px rgba(255, 51, 51, 0.5),
+                inset 0 2px 5px rgba(255, 255, 255, 0.7),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.5);
+    background: radial-gradient(circle at 33% 33%, 
+                                #ff7777 0%, 
+                                #ff2222 40%, 
+                                #dd0000 80%, 
+                                #aa0000 100%);
 }
 
 /* Click areas for cards */
-.card::before, .card::after {
+.click-area {
     content: '';
     position: absolute;
     width: 100%;
     height: 50%;
     z-index: 10;
     cursor: pointer;
+}
+
+.top-click-area {
+    top: 0;
+}
+
+.bottom-click-area {
+    bottom: 0;
+}
+
+/* Card borders for slot machine feel */
+.card::before, .card::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .card::before {
@@ -332,11 +548,12 @@ h1 {
     }
     
     .lever {
-        height: 140px;
+        height: 130px;
+        margin: 5px 0;
     }
     
     .lever-base {
-        height: 110px;
+        height: 95px;
     }
 }
 
@@ -375,8 +592,9 @@ h1 {
     }
     
     .lever {
-        height: 100px;
+        height: 90px;
         width: 25px;
+        margin: 5px 0;
     }
     
     .lever-handle {
@@ -386,7 +604,7 @@ h1 {
     
     .lever-base {
         width: 8px;
-        height: 75px;
+        height: 65px;
         left: 8.5px;
         top: 25px;
     }
@@ -412,11 +630,12 @@ h1 {
     }
     
     .lever {
-        height: 120px;
+        height: 110px;
+        margin: 5px 0;
     }
     
     .lever-base {
-        height: 95px;
+        height: 85px;
     }
     
     h1 {
@@ -427,4 +646,47 @@ h1 {
     .instructions {
         margin-top: 2px;
     }
+}
+
+@media screen and (orientation: portrait) {
+    /* For browsers that support orientation: portrait media query */
+    .container {
+        max-width: 100vh;
+    }
+    
+    /* Improve readability in forced landscape mode */
+    .card-value {
+        font-size: 1rem;
+    }
+}
+
+/* Make sure overlays work in portrait orientation too */
+body.portrait .slot-overlay,
+body.portrait .slot-faceplate,
+body.portrait .slot-faceplate-shine {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    border-radius: 10px;
+}
+
+/* Make orientation message more visible and interactive */
+.orientation-message p {
+    max-width: 80%;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    line-height: 1.5;
+}
+
+.rotate-icon {
+    cursor: pointer;
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 } 
