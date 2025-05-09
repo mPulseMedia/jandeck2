@@ -24,14 +24,14 @@ body {
     border-radius: 20px;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
     overflow: hidden;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 8;
     display: flex;
     flex-direction: column;
 }
 
 h1 {
     font-size: 1.5rem;
-    margin: 5px 0 10px;
+    margin: 5px 0 5px;
     color: #f5f5f5;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
@@ -60,7 +60,7 @@ h1 {
 
 .slot {
     flex: 1;
-    height: 230px;
+    height: 180px;
     position: relative;
     perspective: 1000px;
     border-radius: 10px;
@@ -72,6 +72,7 @@ h1 {
     flex-direction: column;
     aspect-ratio: 2/3;
     max-width: 160px;
+    overflow: hidden;
 }
 
 .slot-title {
@@ -87,16 +88,84 @@ h1 {
     font-size: 0.8rem;
 }
 
+.slot-window {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.slot-faceplate {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    pointer-events: none;
+    border-radius: 10px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7);
+    background: linear-gradient(to bottom, 
+        rgba(0, 0, 0, 0.7) 0%, 
+        rgba(0, 0, 0, 0) 10%, 
+        rgba(0, 0, 0, 0) 90%, 
+        rgba(0, 0, 0, 0.7) 100%
+    );
+}
+
+/* Add horizontal lines for the slot machine effect */
+.slot-faceplate::before, .slot-faceplate::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 3px rgba(255, 255, 255, 0.4);
+}
+
+.slot-faceplate::before {
+    top: 33%;
+}
+
+.slot-faceplate::after {
+    top: 67%;
+}
+
+/* Add vertical shine to simulate reflective surface */
+.slot-faceplate-shine {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    pointer-events: none;
+    z-index: 4;
+}
+
 .card {
-    flex: 1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     transition: transform 0.15s ease-out;
     backface-visibility: hidden;
     overflow: hidden;
+    z-index: 2;
+    border-radius: 0; /* Remove card border radius for slot effect */
 }
 
 .card-content {
@@ -146,7 +215,7 @@ h1 {
 /* Lever Styling */
 .lever-container {
     width: 60px;
-    height: 230px;
+    height: 180px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -205,6 +274,21 @@ h1 {
 
 .card::after {
     bottom: 0;
+}
+
+/* Slot overlay to prevent clicks during animation */
+.slot-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 30;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    pointer-events: all;
+    cursor: not-allowed;
+    display: none;
 }
 
 /* Instructions */
@@ -309,5 +393,38 @@ h1 {
     
     .instructions {
         font-size: 0.7rem;
+    }
+}
+
+/* Landscape mode adjustments */
+@media (orientation: landscape) and (max-height: 600px) {
+    .container {
+        aspect-ratio: auto;
+        max-height: 90vh;
+    }
+    
+    .slot {
+        height: 140px;
+    }
+    
+    .lever-container {
+        height: 140px;
+    }
+    
+    .lever {
+        height: 120px;
+    }
+    
+    .lever-base {
+        height: 95px;
+    }
+    
+    h1 {
+        font-size: 1.2rem;
+        margin: 2px 0 2px;
+    }
+    
+    .instructions {
+        margin-top: 2px;
     }
 } 

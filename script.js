@@ -8,11 +8,26 @@ document.addEventListener('DOMContentLoaded', () => {
             'A# Minor', 'D Minor', 'G Minor', 'C Minor', 'F Minor', 'Bb Minor', 'Eb Minor'
         ],
         progression: [
-            'I-IV-V', 'I-V-vi-IV', 'ii-V-I', 'I-vi-IV-V', 'I-IV-vi-V',
-            'i-VI-III-VII', 'I-V-vi-iii-IV', 'vi-IV-I-V', 'I-bVII-bVI-bVII',
-            'i-iv-VII', 'I-iii-IV-V', 'i-iv-v', 'I-V-bVII-IV', 'i-bVI-bVII',
-            'I-ii-iii-IV', 'i-bIII-bVII', 'I-IV-I-V', 'i-bVII-bVI-V',
-            'I-vi-ii-V', 'I-bIII-bVII-IV'
+            'I-IV-V',       // 145
+            'ii-V-I',       // 251
+            'I-IV-I-V',     // 1415
+            'I-V-vi-IV',    // 1564
+            'I-vi-IV-V',    // 1645
+            'I-IV-vi-V',    // 1465
+            'I-iii-IV-V',   // 1345
+            'I-ii-iii-IV',  // 1234
+            'I-vi-ii-V',    // 1625
+            'vi-IV-I-V',    // 6415
+            'i-iv-v',       // 145 (minor)
+            'i-iv-VII',     // 147 (minor)
+            'i-VI-III-VII', // 1637 (minor)
+            'i-bIII-bVII',  // 137 (minor)
+            'i-bVI-bVII',   // 167 (minor)
+            'i-bVII-bVI-V', // 1765 (minor)
+            'I-V-bVII-IV',  // 1574
+            'I-bVII-bVI-bVII', // 1767
+            'I-bVII-bVI-V', // 1765
+            'I-bIII-bVII-IV' // 1374
         ],
         vibe: [
             'Melancholic', 'Euphoric', 'Dreamy', 'Aggressive', 'Nostalgic',
@@ -30,6 +45,40 @@ document.addEventListener('DOMContentLoaded', () => {
             'Polyrhythmic', 'Half-time Feel', 'Double-time Feel', 'Syncopated'
         ]
     };
+
+    // Helper function to convert progression notation to numeric value for sorting
+    function getProgressionNumericValue(progression) {
+        // Create a map for Roman numeral conversion
+        const romanToNum = {
+            'i': 1, 'I': 1,
+            'ii': 2, 'II': 2,
+            'iii': 3, 'III': 3,
+            'iv': 4, 'IV': 4,
+            'v': 5, 'V': 5,
+            'vi': 6, 'VI': 6,
+            'vii': 7, 'VII': 7,
+            'bIII': 3, 'biii': 3,
+            'bVI': 6, 'bvi': 6,
+            'bVII': 7, 'bvii': 7
+        };
+        
+        // Replace Roman numerals with numbers
+        let numeric = '';
+        const parts = progression.split('-');
+        
+        parts.forEach(part => {
+            if (romanToNum[part]) {
+                numeric += romanToNum[part];
+            }
+        });
+        
+        return parseInt(numeric) || 0;
+    }
+
+    // Sort the progression array numerically
+    slotData.progression.sort((a, b) => {
+        return getProgressionNumericValue(a) - getProgressionNumericValue(b);
+    });
 
     // Animation speed in milliseconds (lower = faster)
     const ANIMATION_SPEED = 150; // Reduced from 250ms to 150ms
@@ -85,6 +134,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize all slots with animating=false
     Object.keys(slots).forEach(slotType => {
         slots[slotType].dataset.animating = 'false';
+        
+        // Add a slot-specific overlay to block clicks during animations
+        const slotOverlay = document.createElement('div');
+        slotOverlay.className = 'slot-overlay';
+        slotOverlay.style.position = 'absolute';
+        slotOverlay.style.top = '0';
+        slotOverlay.style.left = '0';
+        slotOverlay.style.width = '100%';
+        slotOverlay.style.height = '100%';
+        slotOverlay.style.zIndex = '30'; // Higher than click areas but below faceplate
+        slotOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.2)'; // Semi-transparent background
+        slotOverlay.style.borderRadius = '10px'; // Match slot border radius
+        slotOverlay.style.display = 'none';
+        slotOverlay.style.cursor = 'not-allowed';
+        slots[slotType].appendChild(slotOverlay);
     });
 
     // Make sure all cards are visible initially
@@ -98,6 +162,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize the slots with the first cards
     updateCardValues();
+
+    // Function to show slot overlay for a specific slot
+    function showSlotOverlay(slotType) {
+        const overlay = slots[slotType].querySelector('.slot-overlay');
+        if (overlay) {
+            overlay.style.display = 'block';
+        }
+    }
+
+    // Function to hide slot overlay for a specific slot
+    function hideSlotOverlay(slotType) {
+        const overlay = slots[slotType].querySelector('.slot-overlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+    }
 
     // Function to create and add click areas
     function createClickAreas() {
@@ -131,6 +211,12 @@ document.addEventListener('DOMContentLoaded', () => {
             slots[slotType].style.position = 'relative';
             slots[slotType].appendChild(topClickArea);
             slots[slotType].appendChild(bottomClickArea);
+            
+            // Find the overlay and ensure it stays on top
+            const overlay = slots[slotType].querySelector('.slot-overlay');
+            if (overlay) {
+                slots[slotType].appendChild(overlay);
+            }
             
             // Add event listeners to the top click area
             ['click', 'touchend'].forEach(eventType => {
@@ -200,12 +286,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         slots[slotType].dataset.animating = 'true';
         showGlobalOverlay(); // Show the global overlay during animation
+        showSlotOverlay(slotType); // Show the slot-specific overlay
         
-        // Get the current card
-        const currentCard = slots[slotType].querySelector('.current-card');
+        // Get the slot window and current card
+        const slotWindow = slots[slotType].querySelector('.slot-window');
+        const currentCard = slotWindow.querySelector('.current-card');
         if (!currentCard) {
             slots[slotType].dataset.animating = 'false';
             hideGlobalOverlay();
+            hideSlotOverlay(slotType);
             return;
         }
         
@@ -232,8 +321,8 @@ document.addEventListener('DOMContentLoaded', () => {
             newCard.style.transform = 'translateY(-100%)';
         }
         
-        // Add the new card to the slot
-        slots[slotType].insertBefore(newCard, slots[slotType].firstChild);
+        // Add the new card to the slot window
+        slotWindow.appendChild(newCard);
         
         // Force reflow
         newCard.offsetHeight;
@@ -251,8 +340,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentCard.remove();
             }
             slots[slotType].dataset.animating = 'false';
+            hideSlotOverlay(slotType); // Hide the slot-specific overlay
             
-            // Only hide overlay if no other slots are animating
+            // Only hide global overlay if no other slots are animating
             if (!isAnimating()) {
                 hideGlobalOverlay();
             }
@@ -334,9 +424,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Version of rotateSlot specifically for lever pull (with callback)
     function rotateSlotForLever(slotType, direction, callback) {
         slots[slotType].dataset.animating = 'true';
+        showSlotOverlay(slotType); // Show the slot-specific overlay
         
-        // Get the current card
-        const currentCard = slots[slotType].querySelector('.current-card');
+        // Get the slot window and current card
+        const slotWindow = slots[slotType].querySelector('.slot-window');
+        const currentCard = slotWindow.querySelector('.current-card');
         if (!currentCard) {
             slots[slotType].dataset.animating = 'false';
             if (callback) callback();
@@ -366,8 +458,8 @@ document.addEventListener('DOMContentLoaded', () => {
             newCard.style.transform = 'translateY(-100%)';
         }
         
-        // Add the new card to the slot
-        slots[slotType].insertBefore(newCard, slots[slotType].firstChild);
+        // Add the new card to the slot window
+        slotWindow.appendChild(newCard);
         
         // Force reflow
         newCard.offsetHeight;
@@ -385,6 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentCard.remove();
             }
             slots[slotType].dataset.animating = 'false';
+            hideSlotOverlay(slotType); // Hide the slot-specific overlay
             if (callback) callback();
         }, ANIMATION_SPEED);
     }
@@ -393,14 +486,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function simulateMultipleRotations(slotType, direction, steps, finalCallback) {
         if (steps <= 0) {
             slots[slotType].dataset.animating = 'false';
+            hideSlotOverlay(slotType); // Hide the slot-specific overlay
             if (finalCallback) finalCallback();
             return;
         }
         
         slots[slotType].dataset.animating = 'true';
+        showSlotOverlay(slotType); // Show the slot-specific overlay
         
-        // Get the current card
-        const currentCard = slots[slotType].querySelector('.current-card');
+        // Get the slot window and current card
+        const slotWindow = slots[slotType].querySelector('.slot-window');
+        const currentCard = slotWindow.querySelector('.current-card');
         if (!currentCard) {
             slots[slotType].dataset.animating = 'false';
             if (finalCallback) finalCallback();
@@ -430,8 +526,8 @@ document.addEventListener('DOMContentLoaded', () => {
             newCard.style.transform = 'translateY(-100%)';
         }
         
-        // Add the new card to the slot
-        slots[slotType].insertBefore(newCard, slots[slotType].firstChild);
+        // Add the new card to the slot window
+        slotWindow.appendChild(newCard);
         
         // Force reflow
         newCard.offsetHeight;
@@ -456,6 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, MULTI_ROTATION_DELAY);
             } else {
                 slots[slotType].dataset.animating = 'false';
+                hideSlotOverlay(slotType); // Hide the slot-specific overlay
                 if (finalCallback) finalCallback();
             }
         }, ANIMATION_SPEED);
@@ -464,7 +561,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper function to update all card values
     function updateCardValues() {
         Object.keys(slots).forEach(slotType => {
-            const card = slots[slotType].querySelector('.current-card');
+            const slotWindow = slots[slotType].querySelector('.slot-window');
+            const card = slotWindow.querySelector('.current-card');
             const valueElement = card.querySelector('.card-value');
             valueElement.textContent = slotData[slotType][currentIndices[slotType]];
         });
