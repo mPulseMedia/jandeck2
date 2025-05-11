@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
+    <!-- Removed autoRotate disabled -->
+    <!-- <meta http-equiv="ScreenOrientation" content="autoRotate:disabled"> -->
     <title>JamDeck - Music Inspiration Slot Machine</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Ensure revealMode is available globally -->
+    <script>
+        window.revealMode = false;
+        console.log("Global revealMode variable initialized");
+    </script>
     <style>
         /* Add direct interaction styles for debugging */
         .slot {
@@ -35,14 +41,17 @@
     </style>
 </head>
 <body>
+    <!-- Commented out orientation message -->
+    <!--
     <div class="orientation-message">
         <p>Please rotate your device to landscape mode for the best experience</p>
         <div class="rotate-icon">↻</div>
     </div>
+    -->
     
     <!-- Page 1: Slot Machine -->
     <div id="page-slot-machine" class="page active-page">
-    <div class="container">
+    <div class="app_container">
         <div class="slot-machine">
             <div class="slots-container">
                 <!-- Key Slot -->
@@ -93,12 +102,13 @@
                 <!-- Tempo Slot -->
                 <div class="slot" id="tempo-slot">
                     <div class="click-top" onclick="handleSlotClick('tempo', 'prev')"></div>
+                    <div class="click-middle" onclick="toggleRhythmPlay()"></div>
                     <div class="click-bottom" onclick="handleSlotClick('tempo', 'next')"></div>
                     <div class="card-slot">
                         <div class="card current-card blue">
                             <div class="card-content">
-                                <p class="card-value">120 BPM</p>
-                                <div class="rhythm-visualization"></div>
+                                <p class="card-value">Four on Floor</p>
+                                <div class="rhythm-visualization">♩  ♩  ♩  ♩</div>
                             </div>
                         </div>
                     </div>
@@ -116,21 +126,26 @@
             </div>
         </div>
             
-        <h1>JamDeck</h1>
-        
-        <div class="instructions">
-            <p>↑ tap: next • ↓ tap: prev • lever: random</p>
+        <div class="title-row">
+            <!-- Info Button positioned on the left, aligned with first slot -->
+            <button id="toggle-btn-slot" class="toggle-btn info-btn"><span class="info-icon">i</span></button>
+            <h1>JamDeck</h1>
+            <!-- Empty div to balance the layout for centering h1 -->
+            <div class="spacer"></div>
         </div>
-        
-        <!-- Mode Toggle Button -->
-        <button id="toggle-btn-slot" class="toggle-btn bottom-right">Function Index</button>
     </div>
     </div>
     
     <!-- Page 2: Function Index -->
     <div id="page-function-index" class="page">
         <div class="function-index">
-            <h2>Function Index</h2>
+            <div class="title-row">
+                <!-- Info Button positioned on the left, aligned with content -->
+                <button id="toggle-btn-index" class="toggle-btn info-btn"><span class="info-icon">i</span></button>
+                <h2>Function Index</h2>
+                <!-- Empty div to balance the layout for centering -->
+                <div class="spacer"></div>
+            </div>
             <div class="function-list">
                 <div class="function-item">blocker_global_hide</div>
                 <div class="function-item"><span class="repeat">blocker_global_</span>show</div>
@@ -157,9 +172,6 @@
                 <div class="function-item"><span class="repeat">slot_</span>rotate</div>
             </div>
         </div>
-        
-        <!-- Mode Toggle Button -->
-        <button id="toggle-btn-index" class="toggle-btn bottom-right">Slot Machine</button>
     </div>
     
     <script>
@@ -182,8 +194,10 @@
                        'Uplifting', 'Somber', 'Energetic', 'Reflective', 'Dramatic', 'Whimsical', 'Tense',
                        'Hopeful', 'Gritty', 'Cosmic', 'Intimate', 'Anthemic', 'Hypnotic', 'Quirky', 
                        'Majestic', 'Brooding', 'Bittersweet'],
-                tempo: ['80 BPM', '90 BPM', '100 BPM', '110 BPM', '120 BPM', '130 BPM', '140 BPM', 
-                        '150 BPM', '160 BPM', '170 BPM']
+                tempo: ['Four on Floor', 'Wide Quarters', 'Quarters & Eighths', 'Quarter-Eighth Alternating', 'Eighth-Quarter Swing', 
+                       'Double Eighth Kick', 'Sixteenth Roll & Kicks', 'Steady Eighths', 'Double Sixteenths', 'Sixteenth Rush',
+                       'Samba', 'Bossa Nova', 'Rumba', 'Waltz', 'Reggae', 'Salsa', 'Funk Groove', 'Hip Hop Beat', 'Shuffle', 'Tango',
+                       'Cha Cha', 'Trap Beat', 'Flamenco', 'Bulerias', 'Bolero', 'Swing Jazz']
             };
             
             // Get the current value
@@ -233,7 +247,7 @@
             
             // Animate the lever
             const leverHandle = document.querySelector('.lever_handle');
-            leverHandle.style.transition = 'transform 0.2s';
+            leverHandle.style.transition = 'transform 0.4s';
             leverHandle.style.transform = 'translateY(20px)';
             
             // Disable all click areas temporarily
@@ -271,8 +285,10 @@
                                   'Uplifting', 'Somber', 'Energetic', 'Reflective', 'Dramatic', 'Whimsical', 'Tense',
                                   'Hopeful', 'Gritty', 'Cosmic', 'Intimate', 'Anthemic', 'Hypnotic', 'Quirky', 
                                   'Majestic', 'Brooding', 'Bittersweet'],
-                            tempo: ['80 BPM', '90 BPM', '100 BPM', '110 BPM', '120 BPM', '130 BPM', '140 BPM', 
-                                   '150 BPM', '160 BPM', '170 BPM']
+                            tempo: ['Four on Floor', 'Wide Quarters', 'Quarters & Eighths', 'Quarter-Eighth Alternating', 'Eighth-Quarter Swing', 
+                                   'Double Eighth Kick', 'Sixteenth Roll & Kicks', 'Steady Eighths', 'Double Sixteenths', 'Sixteenth Rush',
+                                   'Samba', 'Bossa Nova', 'Rumba', 'Waltz', 'Reggae', 'Salsa', 'Funk Groove', 'Hip Hop Beat', 'Shuffle', 'Tango',
+                                   'Cha Cha', 'Trap Beat', 'Flamenco', 'Bulerias', 'Bolero', 'Swing Jazz']
                         };
                         
                         setTimeout(() => {
@@ -295,48 +311,11 @@
                         }, 150);
                     }, index * 150); // Stagger the animations
                 });
-            }, 200);
-        }
-        
-        // Force landscape orientation
-        function orientation_handle() {
-            if (window.screen && window.screen.orientation) {
-                try {
-                    // Try to lock the screen to landscape
-                    window.screen.orientation.lock('landscape').catch(() => {
-                        console.log('Screen orientation lock not supported or permission denied');
-                        orientation_class_apply();
-                    });
-                } catch (e) {
-                    console.log('Screen orientation API not fully supported');
-                    orientation_class_apply();
-                }
-            } else {
-                orientation_class_apply();
-            }
-        }
-        
-        // Apply orientation class based on window dimensions
-        function orientation_class_apply() {
-            // Use window dimensions to determine orientation
-            if (window.innerWidth < window.innerHeight) {
-                document.body.classList.add('portrait');
-                
-                // Check if device is mobile and show orientation message if needed
-                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                    document.querySelector('.orientation-message').style.display = 'flex';
-                } else {
-                    // On desktop, just force the landscape layout without showing the message
-                    document.querySelector('.orientation-message').style.display = 'none';
-                }
-            } else {
-                document.body.classList.remove('portrait');
-                document.querySelector('.orientation-message').style.display = 'none';
-            }
+            }, 400);
         }
         
         // Add a touch event to the orientation message to dismiss it
-        document.querySelector('.orientation-message').addEventListener('click', function() {
+        document.querySelector('.orientation-message')?.addEventListener('click', function() {
             this.style.display = 'none';
         });
         
@@ -359,20 +338,12 @@
                 });
             }
         });
-        
-        // Set up orientation handling
-        window.addEventListener('load', orientation_handle);
-        window.addEventListener('resize', orientation_handle);
-        window.addEventListener('orientationchange', function() {
-            // Small delay to allow the browser to complete the orientation change
-            setTimeout(orientation_handle, 100);
-        });
-        
-        // Initial call
-        orientation_handle();
     </script>
     
     <script src="script.js"></script>
     <script src="toggle.js"></script>
+    
+    <!-- Reveal Mode Toggle Button -->
+    <button id="reveal-mode-toggle" style="position: fixed; bottom: 20px; right: 20px; background-color: #333; color: white; border: 1px solid #555; font-size: 12px; padding: 5px 10px; border-radius: 3px; cursor: pointer; z-index: 9999; opacity: 0.7;">Reveal Mode</button>
 </body>
 </html> 

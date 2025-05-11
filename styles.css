@@ -23,22 +23,9 @@ body {
     width: 100%;
 }
 
-/* Orientation message */
+/* Orientation message - DISABLED */
 .orientation-message {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #121212;
-    color: white;
-    z-index: 9999;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
+    display: none !important; /* Force hide regardless of orientation */
 }
 
 .rotate-icon {
@@ -53,15 +40,8 @@ body {
     100% { transform: rotate(0deg); }
 }
 
-/* Show orientation message in portrait mode on mobile */
-@media screen and (max-width: 768px) and (orientation: portrait) {
-    .orientation-message {
-        display: flex;
-    }
-}
-
-/* Force landscape layout in portrait mode */
-body.portrait .container {
+/* DISABLED: Force landscape layout in portrait mode 
+body.portrait .app_container {
     transform: rotate(90deg);
     transform-origin: center center;
     width: 100vh;
@@ -74,10 +54,11 @@ body.portrait .container {
     bottom: 0;
     margin: auto;
 }
+*/
 
-/* Adjust sizing for portrait devices forced to landscape */
+/* DISABLED: Adjust sizing for portrait devices forced to landscape
 @media screen and (max-height: 500px) {
-    body.portrait .container {
+    body.portrait .app_container {
         max-width: 95vh;
         padding: 10px;
     }
@@ -113,9 +94,10 @@ body.portrait .container {
         left: 10px;
     }
 }
+*/
 
 /* Initial state: show slot machine, hide function index */
-.container {
+.app_container {
     display: flex; /* Initially visible */
     text-align: center;
     padding: 15px;
@@ -127,7 +109,8 @@ body.portrait .container {
     overflow: hidden;
     aspect-ratio: 16 / 8;
     flex-direction: column;
-    margin: 0 auto; /* Center it */
+    margin: 0 auto 30px; /* Added bottom margin of 30px */
+    position: relative; /* Added to establish positioning context */
 }
 
 h1 {
@@ -397,6 +380,17 @@ h1 {
     margin: 5px 0;
 }
 
+.lever-base {
+    width: 12px;
+    height: 135px;
+    background: linear-gradient(90deg, #777, #999, #777);
+    position: absolute;
+    top: 35px;
+    left: 11.5px;
+    border-radius: 10px;
+    z-index: 1;
+}
+
 .lever_handle {
     width: 35px;
     height: 35px;
@@ -412,8 +406,9 @@ h1 {
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5),
                 inset 0 2px 3px rgba(255, 255, 255, 0.6),
                 inset 0 -2px 3px rgba(0, 0, 0, 0.4);
-    transition: transform 0.075s;
+    transition: transform 0.15s;
     overflow: hidden;
+    z-index: 2;
 }
 
 /* Add reflection to the lever handle */
@@ -434,16 +429,6 @@ h1 {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7),
                 inset 0 1px 2px rgba(255, 255, 255, 0.5),
                 inset 0 -1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.lever-base {
-    width: 12px;
-    height: 135px;
-    background: linear-gradient(90deg, #777, #999, #777);
-    position: absolute;
-    top: 35px;
-    left: 11.5px;
-    border-radius: 10px;
 }
 
 .lever:hover .lever_handle {
@@ -523,7 +508,7 @@ h1 {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .container {
+    .app_container {
         padding: 10px;
         border-radius: 15px;
     }
@@ -531,6 +516,16 @@ h1 {
     h1 {
         font-size: 1.2rem;
         margin: 2px 0 8px;
+    }
+    
+    .title-row {
+        margin: 3px 0;
+    }
+    
+    .title-row .info-btn {
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
     }
     
     .slot-machine {
@@ -557,10 +552,32 @@ h1 {
     .lever-base {
         height: 95px;
     }
+    
+    .info-btn {
+        width: 36px;
+        height: 36px;
+        bottom: 25px;
+        left: 25px;
+    }
+    
+    .info-icon {
+        font-size: 20px;
+    }
+    
+    .container-corner {
+        width: 28px;
+        height: 28px;
+        left: 10px;
+        bottom: 10px;
+    }
+    
+    .container-corner .info-icon {
+        font-size: 16px;
+    }
 }
 
 @media (max-width: 500px) {
-    .container {
+    .app_container {
         padding: 5px;
         border-radius: 10px;
     }
@@ -614,11 +631,33 @@ h1 {
     .instructions {
         font-size: 0.7rem;
     }
+    
+    .info-btn {
+        width: 32px;
+        height: 32px;
+        bottom: 20px;
+        left: 20px;
+    }
+    
+    .info-icon {
+        font-size: 18px;
+    }
+    
+    .container-corner {
+        width: 24px;
+        height: 24px;
+        left: 8px;
+        bottom: 8px;
+    }
+    
+    .container-corner .info-icon {
+        font-size: 14px;
+    }
 }
 
 /* Landscape mode adjustments */
 @media (orientation: landscape) and (max-height: 600px) {
-    .container {
+    .app_container {
         aspect-ratio: auto;
         max-height: 90vh;
     }
@@ -648,30 +687,6 @@ h1 {
     .instructions {
         margin-top: 2px;
     }
-}
-
-@media screen and (orientation: portrait) {
-    /* For browsers that support orientation: portrait media query */
-    .container {
-        max-width: 100vh;
-    }
-    
-    /* Improve readability in forced landscape mode */
-    .card-value {
-        font-size: 1rem;
-    }
-}
-
-/* Make sure overlays work in portrait orientation too */
-body.portrait .slot-overlay,
-body.portrait .slot-faceplate,
-body.portrait .slot-faceplate-shine {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    border-radius: 10px;
 }
 
 /* Make orientation message more visible and interactive */
@@ -705,15 +720,21 @@ body.portrait .slot-faceplate-shine {
     position: relative;
     max-height: 90vh;
     overflow-y: auto;
+    padding-bottom: 60px; /* Add space for the button at the bottom */
 }
 
 .function-index h2 {
     color: #f5f5f5;
     font-size: 1.3rem;
-    margin-bottom: 15px;
-    text-align: center;
+    margin: 0; /* Changed from margin-bottom: 15px to match h1 styling */
+    /* Text-align and border-bottom removed to match h1 styling */
+}
+
+/* Title-row inside function-index gets a bottom border instead */
+.function-index .title-row {
     border-bottom: 1px solid #333;
     padding-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .function-list {
@@ -798,16 +819,42 @@ body.portrait .slot-faceplate-shine {
     animation: pulse 2s infinite;
 }
 
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
-    }
+/* Info button style */
+.info-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #444444;
+    font-size: 20px;
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.7);
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    z-index: 9999;
+    border: 2px solid #ffffff;
+    cursor: pointer;
+}
+
+.info-icon {
+    color: #ffffff;
+    line-height: 1;
+    font-family: "Georgia", serif;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 24px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.info-btn:hover {
+    background-color: #555555;
+    transform: scale(1.2);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+    animation: none;
 }
 
 .toggle-btn:hover {
@@ -871,6 +918,14 @@ body.portrait .slot-faceplate-shine {
     z-index: 2000;
 }
 
+/* Bottom left positioned info button */
+.bottom-left {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    z-index: 2000;
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
     .toggle-btn {
@@ -884,4 +939,288 @@ body.portrait .slot-faceplate-shine {
         padding: 15px;
         border-radius: 8px;
     }
+}
+
+.title-row {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Changed to center */
+    position: relative;
+    margin: 15px 0; /* Equal margin top and bottom */
+    width: 100%;
+    padding: 0;
+    height: 40px; /* Fixed height to ensure alignment */
+}
+
+/* Center the title */
+.title-row h1, .title-row h2 {
+    margin: 0;
+    text-align: center;
+    position: absolute; /* Position absolutely in the center */
+    left: 0;
+    right: 0;
+    width: 100%;
+}
+
+/* Position the info button directly in line with the first slot */
+.title-row .info-btn {
+    position: absolute;
+    left: 15px; /* Align with the first slot's left edge */
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%);
+    margin: 0;
+}
+
+/* Remove the spacer as it's no longer needed */
+.title-row .spacer {
+    display: none;
+}
+
+/* Info button styles - Ensure consistent sizing */
+.info-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #444444;
+    font-size: 18px;
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+    border: 2px solid #ffffff;
+    cursor: pointer;
+    z-index: 100;
+}
+
+/* Only for info buttons NOT in a title-row */
+.info-btn:not(.title-row .info-btn) {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+}
+
+/* Info button specifically in container - kept for backward compatibility */
+.container-corner {
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
+    animation: none; /* Remove pulse animation for cleaner look inside container */
+}
+
+.info-icon {
+    color: #ffffff;
+    line-height: 1;
+    font-family: "Georgia", serif;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 20px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.info-btn:hover {
+    background-color: #555555;
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Specific hover behavior for info button in title row to avoid y-axis movement */
+.title-row .info-btn:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Portrait mode styling */
+@media screen and (orientation: portrait) {
+    .app_container {
+        max-width: 95%;
+        padding: 10px;
+    }
+    
+    .slot-machine {
+        padding: 10px;
+    }
+    
+    .slots-container {
+        /* Make a 2x2 grid layout */
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 10px;
+        width: 100%;
+    }
+    
+    .slot {
+        /* Reset flex properties for grid layout */
+        flex: none;
+        width: 100%;
+        max-width: 100%;
+        min-width: auto;
+        height: 130px;
+        margin: 0;
+    }
+    
+    /* Adjust lever position */
+    .lever-container {
+        margin: 10px auto 0;
+        height: 70px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .lever {
+        transform: rotate(90deg);
+        width: 80px;
+        height: 35px;
+    }
+    
+    .lever-base {
+        width: 60px;
+        height: 10px;
+        left: 10px;
+        top: 12px;
+    }
+    
+    .lever_handle {
+        left: 0;
+    }
+    
+    /* Adjust text sizes for smaller cards */
+    .card-value {
+        font-size: 0.9rem;
+    }
+    
+    .rhythm-visualization {
+        font-size: 0.9rem;
+    }
+    
+    .chord-info {
+        font-size: 0.5rem;
+    }
+    
+    .info-btn.container-corner {
+        bottom: 10px;
+        left: 10px;
+    }
+}
+
+/* Add progression hint styling */
+.prog-hint {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    width: 100%;
+    font-size: 0.65rem;
+    padding: 3px;
+    color: #78582F; /* Light brown color */
+    text-align: center;
+    font-weight: normal;
+}
+
+/* Yellow card styling update to leave space for hint */
+.yellow .card-value {
+    margin-bottom: 20px; /* Add space below for the hint */
+}
+
+/* Add vibe hint styling */
+.vibe-hint {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    width: 100%;
+    font-size: 0.65rem;
+    padding: 3px;
+    color: #1A4635; /* Darker green color */
+    text-align: center;
+    font-weight: normal;
+    font-style: italic;
+}
+
+/* Green card styling update to leave space for hint */
+.green .card-value {
+    margin-bottom: 20px; /* Add space below for the hint */
+}
+
+/* Add play button styling for tempo card - invisible but functional */
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 33.33%;
+    background-color: transparent;
+    border-radius: 0;
+    display: block;
+    cursor: pointer;
+    z-index: 15;
+    transition: none;
+    border: none;
+    opacity: 0;
+}
+
+.play-button:hover {
+    background-color: transparent;
+    transform: translate(-50%, -50%);
+}
+
+.play-button::after {
+    content: '';
+}
+
+.play-button.playing {
+    animation: none;
+}
+
+.play-button.playing::after {
+    content: '';
+}
+
+/* Special handling for tempo slot - divide into thirds */
+#tempo-slot .click-top, 
+#tempo-slot .click-bottom {
+    height: 33.33%; /* One third of the card height */
+    pointer-events: auto; /* Enable click interactions */
+    z-index: 16; /* Above the play button */
+}
+
+#tempo-slot .click-top {
+    top: 0;
+}
+
+#tempo-slot .click-middle {
+    position: absolute;
+    height: 33.33%; /* One third of height */
+    width: 100%;
+    top: 33.33%; /* Position in the middle */
+    left: 0;
+    z-index: 15; /* Below click areas but above card content */
+    cursor: pointer; /* Show pointer cursor */
+}
+
+#tempo-slot .click-bottom {
+    bottom: 0;
+    top: auto; /* Override any top positioning */
+}
+
+/* Style for when audio is playing - applied by JavaScript */
+#tempo-slot .click-middle.playing {
+    background-color: rgba(255, 255, 255, 0.03);
+    animation: subtle-pulse 1.5s infinite;
+}
+
+@keyframes subtle-pulse {
+    0% { background-color: rgba(255, 255, 255, 0.01); }
+    50% { background-color: rgba(255, 255, 255, 0.04); }
+    100% { background-color: rgba(255, 255, 255, 0.01); }
+}
+
+/* Hide the old rule that disabled pointer events */
+/* 
+.blue-card .click-top, .blue-card .click-bottom, 
+.tempo-slot .click-top, .tempo-slot .click-bottom,
+#tempo-slot .click-top, #tempo-slot .click-bottom {
+    pointer-events: none;
 } 
+*/ 
